@@ -4,7 +4,7 @@
 #include<iostream>
 
 Vertex::Vertex(Index i, Index n)
-	: name(i), node(Point2(0.5*cos(2*M_PI*i/n), 0.5*sin(2*M_PI*i/n))) {}
+	: name(i), node(Point2(0.5*cos(2*M_PI*i/n), 0.5*sin(2*M_PI*i/n))), isMouseLocked(false) {}
 
 void Vertex::Print() const {
 	std::cout<<name<<" ";
@@ -27,7 +27,13 @@ void Vertex::AttractedTo(const Vertex& other, double intensity) {
 }
 
 void Vertex::Update() {
-	node.Update();
+	if(!isMouseLocked) node.Update();
+	else node.StayStill();
+}
+
+void Vertex::SetNodePos(const Point2& pt) {
+	//assert(isMouseLocked);
+	node.SetPos(pt);
 }
 
 void Edge::Print() const {
@@ -56,11 +62,9 @@ void Graph::Update() {
 	double intensityRepel = 0.1;
 	double intensityAttract = 0.2;
 	for(auto& v0 : V) {
-		v0->RestrictInsideBoundary();
 		for(const auto& v1 : V) {
 			if(*v0 != *v1) v0->RepelledFrom(*v1, intensityRepel);
 		}
-		v0->RepelledFromBoundary(intensityRepel * 0.01);
 	}
 	for(const auto& e : E) {
 		const auto& vertices = e->GetVertices();
@@ -71,6 +75,22 @@ void Graph::Update() {
 }
 
 void Graph::Draw() const {
-	DrawHelper::Draw(V);
 	DrawHelper::Draw(E);
+	DrawHelper::Draw(V);
 }
+
+Vertex* Graph::LocateVertexAt(const Point2& pt) const {
+	for(const auto& v : V) {
+		if(v->GetNode().Contains(pt)) return v.get();
+	}
+	return nullptr;
+}
+
+const std::vector<std::array<Index, 2>> Graph::GetEdgeNames() const {
+	std::vector<std::array<Index, 2>> edgeNames;
+	edgeNames.reserve(E.size());
+	for(const auto& e : E)
+		edgeNames.push_back(e->GetName());
+	return edgeNames;
+}
+

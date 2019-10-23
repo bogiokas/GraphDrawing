@@ -22,9 +22,14 @@ public:
 	void AttractedTo(const Vertex& other, double intensity);
 	Index GetName() const { return name; }
 	const Physics& GetNode() const { return node; }
+	void SetNodePos(const Point2& pt);
+	void MouseLock() { isMouseLocked = true; }
+	void MouseRelease() { isMouseLocked = false; }
+	bool IsMouseLocked() { return isMouseLocked; }
 private:
 	Index name;
 	Physics node;
+	bool isMouseLocked;
 };
 
 class Edge {
@@ -35,18 +40,24 @@ public:
 	const std::array<Vertex*, 2>& GetVertices() const {
 		return vertices;
 	}
+	const std::array<Index, 2> GetName() const {
+		return { vertices[0]->GetName(), vertices[1]->GetName() };
+	}
 private:
 	std::array<Vertex*, 2> vertices;
 };
 
 class Graph {
+	friend class GraphEventHandler;
 public:
 	Graph(Index n, const std::vector<std::array<Index, 2>>& vPairs);
 	inline Index size() const { return V.size(); }
 	void Print() const;
 	void Update();
 	void Draw() const;
-	const GraphEventHandler& GetEventHandler() {
+	Vertex* LocateVertexAt(const Point2& pt) const;
+	const std::vector<std::array<Index, 2>> GetEdgeNames() const;
+	GraphEventHandler& GetEventHandler() {
 		return eventHandler;
 	}
 private:

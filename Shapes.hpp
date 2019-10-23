@@ -71,6 +71,9 @@ public:
 		if(normQ > EPSQ) *this/=std::sqrt(normQ);
 		else *this = Zero();
 	}
+	double DistQ(const Point2& other) const {
+		return (other-*this).NormQ();
+	}
 	const std::array<double, 2>& GetPt() const {
 		return m_pt;
 	}

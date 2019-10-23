@@ -4,6 +4,7 @@
 #include<GLFW/glfw3.h>
 #include "GraphEventHandler.hpp"
 
+using GLFWResult = int;
 static constexpr int WIDTH = 1024;
 static constexpr int HEIGHT = 600;
 
@@ -40,10 +41,11 @@ public:
 		glfwPollEvents();
 	}
 private:
-	static const GraphEventHandler& GetHandler(GLFWwindow* w);
-	static void CursorPosCallback(GLFWwindow* w, double x, double y);
-	static void MouseButtonCallback(GLFWwindow* w, int button, int action, int /*mods*/);
-	static void KeyCallback(GLFWwindow* w, int key, int /*scancode*/, int action, int /*mods*/);
+	static GraphEventHandler& GetHandler(GLFWwindow* w);
+	static Point2 RawPosToPoint(double i, double j);
+	static void CursorPosCallback(GLFWwindow* w, double i, double j);
+	static void MouseButtonCallback(GLFWwindow* w, GLFWResult button, GLFWResult action, GLFWResult /*mods*/);
+	static void KeyCallback(GLFWwindow* w, GLFWResult key, GLFWResult /*scancode*/, GLFWResult action, GLFWResult /*mods*/);
 
 	GLFWwindow* window;
 };

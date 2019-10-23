@@ -1,6 +1,6 @@
 openGLFlags = -lglfw -lGL -lGLEW -lX11
 warningFlags = -Wall -Wextra -Wshadow -Weffc++
-helperObjects = Shapes.o Physics.o Graph.o DrawHelper.o GLHelper.o GraphEventHandler.o
+helperObjects = Shapes.o Physics.o Graph.o DrawHelper.o GLHelper.o GraphEventHandler.o GraphBuilder.o
 objects = test.o $(helperObjects)
 CC = g++
 version = -std=c++17
@@ -23,6 +23,8 @@ GLHelper.o: GLHelper.cpp GLHelper.hpp
 	$(CC) $(version) -c ./GLHelper.cpp
 GraphEventHandler.o: GraphEventHandler.cpp GraphEventHandler.hpp
 	$(CC) $(version) -c ./GraphEventHandler.cpp
+GraphBuilder.o: GraphBuilder.cpp GraphBuilder.hpp
+	$(CC) $(version) -c ./GraphBuilder.cpp
 
 clean :
 	rm -f $(objects)
