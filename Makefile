@@ -6,8 +6,8 @@ CC = g++
 version = -std=c++17
 
 prog: $(objects)
-	$(CC) $(version) $(openGLFlags) $(warningFlags) -o test $(objects)
-	./test
+	$(CC) $(version) $(openGLFlags) $(warningFlags) -o test $(objects) 2> build.log
+	./test > out.log
 
 test.o: test.cpp $(helperObjects)
 	$(CC) $(version) -c ./test.cpp

@@ -1,20 +1,20 @@
 #include "GraphEventHandler.hpp"
 #include "Graph.hpp"
 
-void GraphEventHandler::StartMovingVertex(const Point2& pt) {
-	m_pSelectedVertex = m_pG->LocateVertexAt(pt);
-	if(m_pSelectedVertex != nullptr)
-		m_pSelectedVertex->MouseLock();
+void GraphEventHandler::SelectVertex() {
+	m_pSelectedVertex = m_pG->LocateVertexAt(m_pointerPos);
 }
 
-void GraphEventHandler::MoveVertex(const Point2& pt) const {
-	if(m_pSelectedVertex != nullptr)
-		m_pSelectedVertex->SetNodePos(pt);
+void GraphEventHandler::PointerPos(const Point2& pt) {
+	m_pointerPos = pt;
 }
 
-void GraphEventHandler::EndMovingVertex() {
-	if(m_pSelectedVertex != nullptr)
-		m_pSelectedVertex->MouseRelease();
+void GraphEventHandler::DeselectVertex() {
 	m_pSelectedVertex = nullptr;
 }
 
+std::optional<std::pair<Vertex*, Point2>> GraphEventHandler::GetLock() {
+	if(m_pSelectedVertex == nullptr)
+		return std::nullopt;
+	return std::make_pair(m_pSelectedVertex, m_pointerPos);
+}

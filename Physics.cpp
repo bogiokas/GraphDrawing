@@ -14,32 +14,29 @@ void Physics::StayStill() {
 }
 
 void Physics::SetPos(const Point2& pt) {
-	Point2 prevPos = m_pos;
 	m_pos = pt;
-	m_vel = (m_pos-prevPos)/timestep;
 	RestrictInsideBoundary();
 }
 void Physics::RestrictInsideBoundary() {
-	bool restrict = false;
 	if(m_pos[0] >= 1.0) {
 		m_pos[0] = 1.0 - 5*EPS;
-		restrict = true;
+		m_vel[0] = -abs(m_vel[0]) / 2.0;
+		m_acc[0] = -0.005*timestep;
 	}
 	else if(m_pos[0] <= -1.0) {
 		m_pos[0] = -1.0 + 5*EPS;
-		restrict = true;
+		m_vel[0] = abs(m_vel[0]) / 2.0;
+		m_acc[0] = 0.005*timestep;
 	}
 	if(m_pos[1] >= 1.0) {
 		m_pos[1] = 1.0 - 5*EPS;
-		restrict = true;
+		m_vel[1] = -abs(m_vel[1]) / 2.0;
+		m_acc[1] = -0.005*timestep;
 	}
 	else if(m_pos[1] <= -1.0) {
 		m_pos[1] = -1.0 + 5*EPS;
-		restrict = true;
-	}
-	if(restrict) {
-		m_vel = Point2::Zero();
-		m_acc = Point2::Zero();
+		m_vel[1] = abs(m_vel[1]) / 2.0;
+		m_acc[1] = 0.005*timestep;
 	}
 }
 

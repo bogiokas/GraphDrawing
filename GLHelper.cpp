@@ -11,8 +11,7 @@ Point2 GLHelper::RawPosToPoint(double i, double j) {
 }
 
 void GLHelper::CursorPosCallback(GLFWwindow* w, double i, double j) {
-	Point2 pt = RawPosToPoint(i, j);
-	GetHandler(w).MoveVertex(pt);
+	GetHandler(w).PointerPos(RawPosToPoint(i, j));
 }
 
 void GLHelper::MouseButtonCallback(GLFWwindow* w, GLFWResult button, GLFWResult action, GLFWResult /*mods*/) {
@@ -20,9 +19,9 @@ void GLHelper::MouseButtonCallback(GLFWwindow* w, GLFWResult button, GLFWResult 
 	glfwGetCursorPos(w, &i, &j);
 	Point2 pt = RawPosToPoint(i, j);
 	if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-		GetHandler(w).StartMovingVertex(pt);
+		GetHandler(w).SelectVertex();
 	if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
-		GetHandler(w).EndMovingVertex();
+		GetHandler(w).DeselectVertex();
 //	GLFWResult stateShift = glfwGetKey(w, GLFW_KEY_LEFT_SHIFT);
 //	GetHandler(w).MouseButton();
 }

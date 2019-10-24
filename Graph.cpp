@@ -4,43 +4,17 @@
 #include<iostream>
 
 Vertex::Vertex(Index i, Index n)
-	: name(i), node(Point2(0.5*cos(2*M_PI*i/n), 0.5*sin(2*M_PI*i/n))), isMouseLocked(false) {}
+	: name(i), node(Point2(0.5*cos(2*M_PI*i/n), 0.5*sin(2*M_PI*i/n))) {}
 
-void Vertex::Print() const {
-	std::cout<<name<<" ";
-}
-
-void Vertex::RestrictInsideBoundary() {
-	node.RestrictInsideBoundary();
-}
-
-void Vertex::RepelledFrom(const Vertex& other, double intensity) {
-	node.ApplyForce(Force::CalcForceToRepel(node, other.GetNode()) * intensity);
-}
-
-void Vertex::RepelledFromBoundary(double intensity) {
-	node.ApplyForce(Force::CalcForceToRepelFromBoundary(node) * intensity);
-}
-
-void Vertex::AttractedTo(const Vertex& other, double intensity) {
-	node.ApplyForce(Force::CalcForceToKeepAtDist(node, other.GetNode(), 0.2) * intensity);
-}
-
-void Vertex::Update() {
-	if(!isMouseLocked) node.Update();
-	else node.StayStill();
-}
-
-void Vertex::SetNodePos(const Point2& pt) {
-	//assert(isMouseLocked);
+void Vertex::FixNodeToPosition(const Point2& pt) {
+	node.StayStill();
 	node.SetPos(pt);
 }
-
-void Edge::Print() const {
-	std::cout<<"{";
-	vertices[0]->Print();
-	vertices[1]->Print();
-	std::cout<<"} ";
+void Vertex::ApplyForceToNode(const Point2& force, double intensity) {
+	node.ApplyForce(force * intensity);
+}
+void Vertex::UpdateNode() {
+	node.Update();
 }
 
 Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& vPairs) : V(n), eventHandler(this) {
@@ -51,27 +25,16 @@ Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& vPairs) : V(n), e
 	}
 }
 
-void Graph::Print() const {
-	std::cout<<"Graph:"<<std::endl;
-	for(const auto& v : V) v->Print();
-	for(const auto& e : E) e->Print();
-	std::cout<<std::endl;
-}
-
+#include<iostream>
 void Graph::Update() {
+	std::cout<<"Updating "<<V.size()<<" "<<E.size()<<std::endl;
+	for(const auto& v : V) DrawHelper::Print(v->GetNode());
 	double intensityRepel = 0.1;
 	double intensityAttract = 0.2;
-	for(auto& v0 : V) {
-		for(const auto& v1 : V) {
-			if(*v0 != *v1) v0->RepelledFrom(*v1, intensityRepel);
-		}
-	}
-	for(const auto& e : E) {
-		const auto& vertices = e->GetVertices();
-		vertices[0]->AttractedTo(*vertices[1], intensityAttract);
-		vertices[1]->AttractedTo(*vertices[0], intensityAttract);
-	}
-	for(const auto& v : V) v->Update();
+	MakeVerticesRepelEachOther(intensityRepel);
+	MakeEdgesTryToKeepFixedDist(0.1, intensityAttract);
+	LockVertexIfNeeded();
+	UpdateAllNodes();
 }
 
 void Graph::Draw() const {
@@ -92,5 +55,37 @@ const std::vector<std::array<Index, 2>> Graph::GetEdgeNames() const {
 	for(const auto& e : E)
 		edgeNames.push_back(e->GetName());
 	return edgeNames;
+}
+
+void Graph::MakeVerticesRepelEachOther(double intensity) {
+	for(auto& v0 : V) {
+		for(const auto& v1 : V) {
+			if(*v0 != *v1) {
+				v0->ApplyForceToNode(Force::CalcForceToRepel(v0->GetNode(), v1->GetNode()), intensity);
+			}
+		}
+	}
+}
+
+void Graph::MakeEdgesTryToKeepFixedDist(double dist, double intensity) {
+	for(const auto& e : E) {
+		const auto& vertices = e->GetVertices();
+		const auto& v0 = vertices[0];
+		const auto& v1 = vertices[1];
+		v0->ApplyForceToNode(Force::CalcForceToKeepAtDist(v0->GetNode(), v1->GetNode(), dist), intensity);
+		v1->ApplyForceToNode(Force::CalcForceToKeepAtDist(v1->GetNode(), v0->GetNode(), dist), intensity);
+	}
+}
+
+void Graph::LockVertexIfNeeded() {
+	if(auto lock = eventHandler.GetLock(); lock.has_value()) {
+		auto [pV, pt] = *lock;
+		pV->FixNodeToPosition(pt);
+	}
+}
+void Graph::UpdateAllNodes() {
+	for(auto& v : V) {
+		v->UpdateNode();
+	}
 }
 

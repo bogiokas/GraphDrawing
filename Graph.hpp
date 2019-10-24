@@ -14,29 +14,21 @@ public:
 	inline bool operator!=(const Vertex& other) const {
 		return !(*this == other);
 	}
-	void Print() const;
-	void Update();
-	void RestrictInsideBoundary();
-	void RepelledFrom(const Vertex& other, double intensity);
-	void RepelledFromBoundary(double intensity);
-	void AttractedTo(const Vertex& other, double intensity);
+	void FixNodeToPosition(const Point2& pt);
+	void ApplyForceToNode(const Point2& force, double intensity);
+	void UpdateNode();
+
 	Index GetName() const { return name; }
 	const Physics& GetNode() const { return node; }
-	void SetNodePos(const Point2& pt);
-	void MouseLock() { isMouseLocked = true; }
-	void MouseRelease() { isMouseLocked = false; }
-	bool IsMouseLocked() { return isMouseLocked; }
 private:
 	Index name;
 	Physics node;
-	bool isMouseLocked;
 };
 
 class Edge {
 public:
 	Edge(Vertex* a, Vertex* b) : vertices{a, b} {}
 	inline const Segment2 GetSeg() const { return Segment2(vertices[0]->GetPt(), vertices[1]->GetPt()); }
-	void Print() const;
 	const std::array<Vertex*, 2>& GetVertices() const {
 		return vertices;
 	}
@@ -52,7 +44,6 @@ class Graph {
 public:
 	Graph(Index n, const std::vector<std::array<Index, 2>>& vPairs);
 	inline Index size() const { return V.size(); }
-	void Print() const;
 	void Update();
 	void Draw() const;
 	Vertex* LocateVertexAt(const Point2& pt) const;
@@ -61,6 +52,10 @@ public:
 		return eventHandler;
 	}
 private:
+	void MakeVerticesRepelEachOther(double intensity);
+	void MakeEdgesTryToKeepFixedDist(double dist, double intensity);
+	void LockVertexIfNeeded();
+	void UpdateAllNodes();
 	std::vector<std::unique_ptr<Vertex>> V;
 	std::vector<std::unique_ptr<Edge>> E;
 	GraphEventHandler eventHandler;

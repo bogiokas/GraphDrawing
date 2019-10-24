@@ -3,6 +3,9 @@
 #include<vector>
 #include<cmath>
 #include<memory>
+#include<optional>
+#include<iterator>
+#include<algorithm>
 
 //#define _DEBUG 0
 
