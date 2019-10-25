@@ -17,7 +17,7 @@ void Vertex::UpdateNode() {
 	node.Update();
 }
 
-Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& vPairs) : V(n), eventHandler(this) {
+Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& vPairs) : V(n), E(), eventHandler(this) {
 	for(Index i = 0; i<n ; ++i) V[i] = std::make_unique<Vertex>(i, n);
 	E.reserve(vPairs.size());
 	for(const auto& vPair : vPairs) {
@@ -25,14 +25,11 @@ Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& vPairs) : V(n), e
 	}
 }
 
-#include<iostream>
 void Graph::Update() {
-	std::cout<<"Updating "<<V.size()<<" "<<E.size()<<std::endl;
-	for(const auto& v : V) DrawHelper::Print(v->GetNode());
 	double intensityRepel = 0.1;
 	double intensityAttract = 0.2;
 	MakeVerticesRepelEachOther(intensityRepel);
-	MakeEdgesTryToKeepFixedDist(0.1, intensityAttract);
+	MakeEdgesTryToKeepFixedDist(0.2, intensityAttract);
 	LockVertexIfNeeded();
 	UpdateAllNodes();
 }
@@ -83,6 +80,7 @@ void Graph::LockVertexIfNeeded() {
 		pV->FixNodeToPosition(pt);
 	}
 }
+
 void Graph::UpdateAllNodes() {
 	for(auto& v : V) {
 		v->UpdateNode();

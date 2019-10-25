@@ -4,7 +4,7 @@
 #include "GLHelper.hpp"
 
 int main() {
-	auto pG = GraphBuilder::Dual(*GraphBuilder::Dual(*GraphBuilder::IndependentVertices(5)));
+	auto pG = GraphBuilder::Dual(*GraphBuilder::DisjointUnion(*GraphBuilder::Cycle(3),*GraphBuilder::Cross(3)));
 
 	GLHelper gl(pG.get());
 	while(gl.IsActive()) {

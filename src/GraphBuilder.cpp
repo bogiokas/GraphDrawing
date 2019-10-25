@@ -1,9 +1,12 @@
 #include "GraphBuilder.hpp"
 
+
 std::unique_ptr<Graph> GraphBuilder::IndependentVertices(Index n) {
 	std::vector<std::array<Index, 2>> edgePairs;
 	return std::make_unique<Graph>(n, edgePairs);
 }
+
+
 std::unique_ptr<Graph> GraphBuilder::Path(Index n) {
 	std::vector<std::array<Index, 2>> edgePairs;
 	for(Index i = 0; i < n; ++i) {
@@ -19,7 +22,7 @@ std::unique_ptr<Graph> GraphBuilder::Cycle(Index n) {
 		edgePairs.push_back({i,i+1});
 	}
 	edgePairs.push_back({n-1,0});
-	return std::make_unique<Graph>(n+1, edgePairs);
+	return std::make_unique<Graph>(n, edgePairs);
 }
 
 
@@ -71,10 +74,8 @@ std::unique_ptr<Graph> GraphBuilder::Cross(Index dim) {
 }
 
 
-std::unique_ptr<Graph> GraphBuilder::Kneser(Index n, Index k) {
-	std::vector<std::array<Index, 2>> edgePairs;
-	return std::make_unique<Graph>(n, edgePairs);
-}
+//std::unique_ptr<Graph> GraphBuilder::Kneser(Index n, Index k) {
+//}
 
 
 

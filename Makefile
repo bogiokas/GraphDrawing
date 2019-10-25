@@ -17,7 +17,7 @@ incFlags = $(addprefix -I, $(INC_DIRS))
 
 CXX = g++
 versionFlags = -std=c++17
-#warningFlags = -Wall -Wextra -Wshadow -Weffc++
+warningFlags = -Wall -Wextra -Wshadow -Weffc++
 openGLFlags = -lglfw -lGL -lGLEW -lX11
 allFlags = $(versionFlags) $(warningFlags) $(openGLFlags) $(depFlags) $(incFlags)
 

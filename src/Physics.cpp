@@ -64,9 +64,9 @@ Point2 Force::CalcForceToRepelFromBoundary(const Physics& nodeFrom) {
 	double forceMagnitudeRight = CalcGravitationalForceMagnitude(nodeFrom, projRight);
 	Physics projLeft = Physics(Point2(-1.0, pos[1]));
 	double forceMagnitudeLeft = CalcGravitationalForceMagnitude(nodeFrom, projLeft);
-	Physics projUp = Physics(Point2(pos[0], 1.0));
+	Physics projUp = Physics(Point2(pos[0], -1.0));
 	double forceMagnitudeUp = CalcGravitationalForceMagnitude(nodeFrom, projUp);
-	Physics projDown = Physics(Point2(pos[0], -1.0));
+	Physics projDown = Physics(Point2(pos[0], 1.0));
 	double forceMagnitudeDown = CalcGravitationalForceMagnitude(nodeFrom, projDown);
 	return Point2::Xinv() * forceMagnitudeRight +
 		Point2::X() * forceMagnitudeLeft +

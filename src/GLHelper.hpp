@@ -12,7 +12,7 @@ class Graph;
 
 class GLHelper {
 public:
-	GLHelper(Graph* pG) {
+	GLHelper(Graph* pG) : window(nullptr) {
 		glfwInit();
 #ifdef _DEBUG
 		window = glfwCreateWindow(640, 480, "Let There Be Graphs", nullptr, nullptr);
@@ -41,6 +41,8 @@ public:
 		glfwPollEvents();
 	}
 private:
+	GLHelper(const GLHelper& other) = delete;
+	GLHelper operator=(const GLHelper& other) = delete;
 	static GraphEventHandler& GetHandler(GLFWwindow* w);
 	static Point2 RawPosToPoint(double i, double j);
 	static void CursorPosCallback(GLFWwindow* w, double i, double j);

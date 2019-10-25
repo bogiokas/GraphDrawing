@@ -28,7 +28,6 @@ public:
 	static Index Combinations(Index n, Index k) {
 		return Factorial(n)/(Factorial(k)*Factorial(n-k));
 	}
-
 };
 
 class Color {
@@ -42,3 +41,4 @@ public:
 static constexpr Color RED = {0.5f, 0.0f, 0.0f, 1.0f};
 static constexpr Color GREEN = {0.0f, 1.0f, 0.0f, 1.0f};
 static constexpr Color BLUE = {0.0f, 0.0f, 1.0f, 1.0f};
+

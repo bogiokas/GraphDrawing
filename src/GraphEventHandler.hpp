@@ -15,6 +15,8 @@ public:
 	//void CreateVertex(double x, double y) const;
 	std::optional<std::pair<Vertex*, Point2>> GetLock();
 private:
+	GraphEventHandler(const GraphEventHandler& other) = delete;
+	GraphEventHandler operator=(const GraphEventHandler& other) = delete;
 	Graph* m_pG;
 	Vertex* m_pSelectedVertex;
 	Point2 m_pointerPos;
