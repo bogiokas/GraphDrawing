@@ -1,10 +1,11 @@
-#include "Basics.hpp"
-#include "Graph.hpp"
-#include "GraphBuilder.hpp"
-#include "GLHelper.hpp"
+#include "Basics/Basics.hpp"
+#include "Graphs/Graph.hpp"
+#include "Graphs/GraphBuilder.hpp"
+#include "GLHelper/GLHelper.hpp"
 
 int main() {
-	auto pG = GraphBuilder::Dual(*GraphBuilder::DisjointUnion(*GraphBuilder::Cycle(3),*GraphBuilder::Cross(3)));
+	//auto pG = GraphBuilder::Dual(*GraphBuilder::DisjointUnion(*GraphBuilder::Cycle(3),*GraphBuilder::Cross(3)));
+	auto pG = GraphBuilder::Complete(5);
 
 	GLHelper gl(pG.get());
 	while(gl.IsActive()) {

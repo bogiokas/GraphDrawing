@@ -1,5 +1,5 @@
 #include "GraphEventHandler.hpp"
-#include "Graph.hpp"
+#include "Graphs/Graph.hpp"
 
 void GraphEventHandler::SelectVertex() {
 	m_pSelectedVertex = m_pG->LocateVertexAt(m_pointerPos);

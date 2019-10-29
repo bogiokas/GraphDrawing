@@ -1,6 +1,6 @@
 #pragma once
-#include "Basics.hpp"
-#include "Shapes.hpp"
+#include "Basics/Basics.hpp"
+#include "Basics/Shapes.hpp"
 
 class Graph;
 class Vertex;

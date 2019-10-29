@@ -1,5 +1,5 @@
 #include "GLHelper.hpp"
-#include "Graph.hpp"
+#include "Graphs/Graph.hpp"
 
 GraphEventHandler& GLHelper::GetHandler(GLFWwindow* w) {
 	auto G = static_cast<Graph*>(glfwGetWindowUserPointer(w));

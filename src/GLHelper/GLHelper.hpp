@@ -1,8 +1,8 @@
 #pragma once
+#include "Graphs/GraphEventHandler.hpp"
 
 #include<GL/glew.h>
 #include<GLFW/glfw3.h>
-#include "GraphEventHandler.hpp"
 
 using GLFWResult = int;
 static constexpr int WIDTH = 1024;
@@ -51,3 +51,4 @@ private:
 
 	GLFWwindow* window;
 };
+

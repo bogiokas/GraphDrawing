@@ -1,4 +1,4 @@
-#include "Shapes.hpp"
+#include "Basics/Shapes.hpp"
 
 #include <GL/glew.h>
 

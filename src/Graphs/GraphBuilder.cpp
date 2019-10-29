@@ -79,30 +79,31 @@ std::unique_ptr<Graph> GraphBuilder::Cross(Index dim) {
 
 
 
-std::unique_ptr<Graph> GraphBuilder::Dual(const Graph& G) {
-	Index n = G.size();
-	auto edgePairsG = G.GetEdgeNames();
-	std::vector<std::array<Index, 2>> edgePairs;
-	for(Index i = 0; i < n; ++i) {
-		for(Index j = i+1; j < n; ++j) {
-			std::array<std::array<Index, 2>, 2> pairs;
-			pairs[0] = {i,j};
-			pairs[1] = {j,i};
-			if(std::find_first_of(edgePairsG.begin(), edgePairsG.end(), pairs.begin(), pairs.end()) == edgePairsG.end())
-				edgePairs.push_back({i,j});
-		}
-	}
-	return std::make_unique<Graph>(n, edgePairs);
-}
-
-std::unique_ptr<Graph> GraphBuilder::DisjointUnion(const Graph& G1, const Graph& G2) {
-	const std::vector<std::array<Index, 2>>& edgePairs1 = G1.GetEdgeNames();
-	Index n1 = G1.size();
-	const std::vector<std::array<Index, 2>>& edgePairs2 = G2.GetEdgeNames();
-	Index n2 = G2.size();
-	std::vector<std::array<Index, 2>> edgePairs = edgePairs1;
-	for(const auto& edgePair : edgePairs2)
-		edgePairs.push_back( { edgePair[0] + n1, edgePair[1] + n1 });
-	return std::make_unique<Graph>(n1+n2, edgePairs);
-}
+//std::unique_ptr<Graph> GraphBuilder::Dual(const Graph& G) {
+//	Index n = G.size();
+//	auto edgePairsG = G.GetEdgeLabels();
+//	std::vector<std::array<Index, 2>> edgePairs;
+//	for(Index i = 0; i < n; ++i) {
+//		for(Index j = i+1; j < n; ++j) {
+//			std::array<std::array<Index, 2>, 2> pairs;
+//			pairs[0] = {i,j};
+//			pairs[1] = {j,i};
+//			if(std::find_first_of(edgePairsG.begin(), edgePairsG.end(), pairs.begin(), pairs.end()) == edgePairsG.end())
+//				edgePairs.push_back({i,j});
+//		}
+//	}
+//	return std::make_unique<Graph>(n, edgePairs);
+//}
+//
+//
+//std::unique_ptr<Graph> GraphBuilder::DisjointUnion(const Graph& G1, const Graph& G2) {
+//	const std::vector<std::array<Index, 2>>& edgePairs1 = G1.GetEdgeLabels();
+//	Index n1 = G1.size();
+//	const std::vector<std::array<Index, 2>>& edgePairs2 = G2.GetEdgeLabels();
+//	Index n2 = G2.size();
+//	std::vector<std::array<Index, 2>> edgePairs = edgePairs1;
+//	for(const auto& edgePair : edgePairs2)
+//		edgePairs.push_back( { edgePair[0] + n1, edgePair[1] + n1 });
+//	return std::make_unique<Graph>(n1+n2, edgePairs);
+//}
 
