@@ -4,6 +4,7 @@
 class LabelBase {
 public:
 	virtual bool operator==(const LabelBase& other) const = 0;
+	virtual ~LabelBase() = default;
 };
 
 template<class Name> class Label : public LabelBase {
@@ -18,6 +19,7 @@ public:
 		if(otherLabel == nullptr) return false;
 		return m_name == otherLabel->GetName();
 	}
+	~Label<Name>() override = default;
 private:
 	Name m_name;
 };

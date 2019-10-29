@@ -3,10 +3,10 @@
 #include "Physics/ForceBuilder.hpp"
 #include "Label.hpp"
 
-Graph::Graph(const std::vector<std::unique_ptr<LabelBase>> V,
-	const std::vector<std::array<std::unique_ptr<LabelBase>, 2>> E)
-	: m_V(V.size()), m_E(), m_eventHandler(this) {
-}
+//Graph::Graph(const std::vector<std::unique_ptr<LabelBase>> V,
+//	const std::vector<std::array<std::unique_ptr<LabelBase>, 2>> E)
+//	: m_V(V.size()), m_E(), m_eventHandler(this) {
+//}
 
 Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& E) 
 	: m_V(n), m_E(), m_eventHandler(this) {

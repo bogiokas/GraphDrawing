@@ -5,9 +5,9 @@ LOG_DIR = log
 
 ## logging flags - uncomment if terminal gets too crowded
 #makeLogDir = mkdir -p $(LOG_DIR)
-#rmEmptyLogFiles = find . -type f -empty -delete
 #LOGGING = 2> $(LOG_DIR)/make_$(notdir $@).log
 #LOGGING_RUN = > $(LOG_DIR)/run.log
+#rmEmptyLogFiles = find . -type f -empty -delete
 
 SRCS := $(shell find $(SRC_DIR) -name *.cpp)
 OBJS := $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
@@ -19,7 +19,7 @@ incFlags = $(addprefix -I, $(INC_DIRS))
 
 CXX = g++
 versionFlags = -std=c++17
-#warningFlags = -Wall -Wextra -Wshadow -Weffc++
+warningFlags = -Wall -Wextra -Wshadow -Weffc++
 openGLFlags = -lglfw -lGL -lGLEW -lX11
 allFlags = $(versionFlags) $(warningFlags) $(openGLFlags) $(depFlags) $(incFlags)
 
