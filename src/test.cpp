@@ -5,7 +5,8 @@
 
 int main() {
 	//auto pG = GraphBuilder::Dual(*GraphBuilder::DisjointUnion(*GraphBuilder::Cycle(3),*GraphBuilder::Cross(3)));
-	auto pG = GraphBuilder::Complete(5);
+	//able to init up to K_{37} w/o exploding
+	auto pG = GraphBuilder::Complete(10);
 
 	GLHelper gl(pG.get());
 	while(gl.IsActive()) {
