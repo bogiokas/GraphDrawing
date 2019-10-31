@@ -13,5 +13,5 @@ public:
 
 template<> void DrawHelper::Draw(const Node& node);
 
-template<> void DrawHelper::Draw(const std::vector<std::unique_ptr<Vertex>>& vertices);
-template<> void DrawHelper::Draw(const std::vector<std::unique_ptr<Edge>>& edges);
+template<> void DrawHelper::Draw(const VertexSet& vertices);
+template<> void DrawHelper::Draw(const EdgeSet& edges);

@@ -1,11 +1,13 @@
 #pragma once
 #include<array>
 #include<vector>
+#include<unordered_set>
 #include<cmath>
 #include<memory>
 #include<optional>
 #include<iterator>
 #include<algorithm>
+#include<cassert>
 
 //#define _DEBUG 0
 
@@ -13,6 +15,10 @@ constexpr double EPS = 1.0e-5;
 constexpr double EPSQ = EPS*EPS;
 
 using Index = size_t;
+
+template<class T> struct Unique_Ptr_Eq {
+	bool operator()(const std::unique_ptr<T>& ptr1, const std::unique_ptr<T>& ptr2) const { return *ptr1 == *ptr2; }
+};
 
 class Math {
 public:

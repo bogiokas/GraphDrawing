@@ -3,24 +3,30 @@
 #include "Physics/ForceBuilder.hpp"
 #include "Label.hpp"
 
-//Graph::Graph(const std::vector<std::unique_ptr<LabelBase>> V,
-//	const std::vector<std::array<std::unique_ptr<LabelBase>, 2>> E)
-//	: m_V(V.size()), m_E(), m_eventHandler(this) {
-//}
+Graph::Graph(std::vector<std::unique_ptr<LabelBase>> V, std::vector<std::array<LabelBase*, 2>> E) : m_V(), m_E(), m_eventHandler(this) {
+	Init(std::move(V), std::move(E));
+}
 
-Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& E) 
-	: m_V(n), m_E(), m_eventHandler(this) {
-	constexpr double initD = 0.5;
-	for(Index i = 0; i<n ; ++i) {
-		auto pLabel = std::make_unique<Label<Index>>(i);
-		m_V[i] = std::make_unique<Vertex>(std::move(pLabel));
-		const Point2& pt = Point2(initD*cos(2*M_PI*i/n),initD*sin(2*M_PI*i/n));
-		m_V[i]->FixNodeToPosition(pt);
-	}
+Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& indexPairs) : m_V(), m_E(), m_eventHandler(this) {
+	std::vector<std::unique_ptr<LabelBase>> V(n);
+	for(Index i = 0; i < n; ++i)
+		V[i] = std::make_unique<Label<Index>>(i);
+	Index m = indexPairs.size();
+	std::vector<std::array<LabelBase*, 2>> E(m);
+	for(Index i = 0; i < m; ++i)
+		E[i] = std::array<LabelBase*, 2>({ V[indexPairs[i][0]].get(), V[indexPairs[i][1]].get() });
+			//E[i] = { V[indexPairs[i][0]].get(), V[indexPairs[i][1]].get() };
+	Init(std::move(V), std::move(E));
+}
+
+void Graph::Init(std::vector<std::unique_ptr<LabelBase>> V, std::vector<std::array<LabelBase*, 2>> E) {
+	m_V.reserve(V.size());
+	for(auto& pLabel : V)
+		assert(InsertVertex(std::move(pLabel)));
 	m_E.reserve(E.size());
-	for(const auto& e : E) {
-		m_E.push_back(std::make_unique<Edge>(m_V[e[0]].get(), m_V[e[1]].get()));
-	}
+	for(const auto& labelPair : E)
+		assert(InsertEdge(labelPair[0], labelPair[1]));
+	ArrangeVerticesAtCircle();
 }
 
 void Graph::Update() {
@@ -37,6 +43,18 @@ void Graph::Draw() const {
 	DrawHelper::Draw(m_V);
 }
 
+bool Graph::InsertVertex(std::unique_ptr<LabelBase> pLabel) {
+	return m_V.insert(std::make_unique<Vertex>(std::move(pLabel))).second;
+}
+bool Graph::InsertEdge(LabelBase* pLabel0, LabelBase* pLabel1) {
+	auto it0 = std::find_if(m_V.begin(), m_V.end(), [pLabel0](const auto& pV) { return pV->GetLabel() == pLabel0; });
+	if(it0 == m_V.end()) return false;
+	auto it1 = std::find_if(m_V.begin(), m_V.end(), [pLabel1](const auto& pV) { return pV->GetLabel() == pLabel1; });
+	if(it1 == m_V.end()) return false;
+	m_E.insert(std::make_unique<Edge>(it0->get(), it1->get()));
+	return true;
+}
+
 Vertex* Graph::LocateVertexAt(const Point2& pt) const {
 	for(const auto& v : m_V) {
 		if(v->GetNode().Contains(pt)) return v.get();
@@ -50,6 +68,16 @@ const std::vector<std::array<const LabelBase*, 2>> Graph::GetEdgeLabels() const 
 	for(const auto& e : m_E)
 		edgeLabels.push_back(e->GetLabels());
 	return edgeLabels;
+}
+
+void Graph::ArrangeVerticesAtCircle(const double r) {
+	Index n = size();
+	Index i = 0;
+	for(const auto& v : m_V) {
+		const Point2& pt = Point2(r, 2*M_PI*i/n, CoordsSetting::Polar);
+		v->FixNodeToPosition(pt);
+		i++;
+	}
 }
 
 void Graph::MakeVerticesRepelEachOther(double intensity) {

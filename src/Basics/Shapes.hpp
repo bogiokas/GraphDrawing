@@ -15,12 +15,17 @@ private:
 	Color m_col;
 };
 
+enum class CoordsSetting { Cartesian, Polar };
 class Point2 : public Shape {
 public:
 	Point2(const Color& col = BLUE)
 		: Shape(col), m_pt{0.0, 0.0} {}
-	Point2(double x, double y, const Color& col = BLUE)
-		: Shape(col), m_pt{x, y} {}
+	Point2(double s, double t, CoordsSetting setting = CoordsSetting::Cartesian, const Color& col = BLUE)
+		: Shape(col), m_pt{0.0, 0.0} {
+			if(setting == CoordsSetting::Cartesian) m_pt = {s, t};
+			else if(setting == CoordsSetting::Polar) m_pt = {s*cos(t), s*sin(t)};
+			else assert(false);
+		}
 	static Point2 Zero() { return Point2(0.0, 0.0); }
 	static Point2 X() { return Point2(1.0, 0.0); }
 	static Point2 Xinv() { return Point2(-1.0, 0.0); }

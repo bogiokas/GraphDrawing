@@ -3,6 +3,7 @@
 #include "Basics/Shapes.hpp"
 #include "Physics/Node.hpp"
 #include "Physics/Force.hpp"
+#include "Output/PrintHelper.hpp"
 #include "Label.hpp"
 
 class Vertex {

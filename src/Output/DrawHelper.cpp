@@ -19,7 +19,7 @@ template<> void DrawHelper::Draw(const Node& node) {
 #endif
 }
 
-template<> void DrawHelper::Draw(const std::vector<std::unique_ptr<Vertex>>& vertices) {
+template<> void DrawHelper::Draw(const VertexSet& vertices) {
 	glEnable(GL_BLEND);
 	glPointSize(5.0);
 	glBegin(GL_POINTS);
@@ -43,7 +43,7 @@ template<> void DrawHelper::Draw(const std::vector<std::unique_ptr<Vertex>>& ver
 #endif
 }
 
-template<> void DrawHelper::Draw(const std::vector<std::unique_ptr<Edge>>& edges) {
+template<> void DrawHelper::Draw(const EdgeSet& edges) {
 	glEnable(GL_BLEND);
 	glLineWidth(2.0);
 	glBegin(GL_LINES);
