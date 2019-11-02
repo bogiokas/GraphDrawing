@@ -15,7 +15,24 @@ Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& indexPairs) : m_V
 	std::vector<std::array<LabelBase*, 2>> E(m);
 	for(Index i = 0; i < m; ++i)
 		E[i] = std::array<LabelBase*, 2>({ V[indexPairs[i][0]].get(), V[indexPairs[i][1]].get() });
-			//E[i] = { V[indexPairs[i][0]].get(), V[indexPairs[i][1]].get() };
+	Init(std::move(V), std::move(E));
+}
+
+template<class Name> Graph::Graph(std::vector<Name> names, const std::vector<std::array<Name, 2>>& namePairs)
+				: m_V(), m_E(), m_eventHandler(this) {
+	Index n = names.size();
+	std::vector<std::unique_ptr<LabelBase>> V(n);
+	for(Index i = 0; i < n; ++i)
+		V[i] = std::make_unique<Label<Name>>(names[i]);
+	Index m = namePairs.size();
+	std::vector<std::array<LabelBase*, 2>> E(m);
+	for(Index i = 0; i < m; ++i) {
+		auto it0 = find(names.begin(), names.end(), namePairs[i][0]);
+		assert(it0 != names.end());
+		auto it1 = find(names.begin(), names.end(), namePairs[i][1]);
+		assert(it1 != names.end());
+		E[i] = std::array<LabelBase*, 2>({ V[it0 - names.begin()].get(), V[it1 - names.begin()].get() });
+	}
 	Init(std::move(V), std::move(E));
 }
 

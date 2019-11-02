@@ -18,9 +18,9 @@ using EdgeSet = std::unordered_set<
 
 class Graph {
 public:
-	Graph(std::vector<std::unique_ptr<LabelBase>> V,
-		std::vector<std::array<LabelBase*, 2>> E);
+	Graph(std::vector<std::unique_ptr<LabelBase>> V, std::vector<std::array<LabelBase*, 2>> E);
 	Graph(Index n, const std::vector<std::array<Index, 2>>& indexPairs);
+	template<class Name> Graph(std::vector<Name> names, const std::vector<std::array<Name, 2>>& namePairs);
 
 	inline Index size() const {
 		return m_V.size();
