@@ -13,6 +13,6 @@ public:
 	static std::unique_ptr<Graph> Cross(Index dim);
 	static std::unique_ptr<Graph> Kneser(Index n, Index k);
 
-//	static std::unique_ptr<Graph> Dual(const Graph& G);
-//	static std::unique_ptr<Graph> DisjointUnion(const Graph& G1, const Graph& G2);
+	static std::unique_ptr<Graph> Dual(const Graph& G);
+	static std::unique_ptr<Graph> DisjointUnion(const Graph& G1, const Graph& G2);
 };

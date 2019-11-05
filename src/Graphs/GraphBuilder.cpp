@@ -78,6 +78,12 @@ std::unique_ptr<Graph> GraphBuilder::Cross(Index dim) {
 //}
 
 
+//std::unique_ptr<Graph> GraphBuilder::Dual(const Graph& G) {
+//
+//
+//
+//	
+//}
 
 //std::unique_ptr<Graph> GraphBuilder::Dual(const Graph& G) {
 //	Index n = G.size();
@@ -94,8 +100,8 @@ std::unique_ptr<Graph> GraphBuilder::Cross(Index dim) {
 //	}
 //	return std::make_unique<Graph>(n, edgePairs);
 //}
-//
-//
+
+
 //std::unique_ptr<Graph> GraphBuilder::DisjointUnion(const Graph& G1, const Graph& G2) {
 //	const std::vector<std::array<Index, 2>>& edgePairs1 = G1.GetEdgeLabels();
 //	Index n1 = G1.size();

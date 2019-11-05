@@ -21,6 +21,7 @@ constexpr double EPSQ = EPS*EPS;
 using Index = size_t;
 
 template<class T> struct Unique_Ptr_Eq {
+public:
 	bool operator()(const std::unique_ptr<T>& ptr1, const std::unique_ptr<T>& ptr2) const { return *ptr1 == *ptr2; }
 };
 

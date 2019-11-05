@@ -1,5 +1,6 @@
 #include "Node.hpp"
 
+
 void Node::Update() {
 	m_vel += m_acc * timestep;
 	m_pos += m_vel * timestep;

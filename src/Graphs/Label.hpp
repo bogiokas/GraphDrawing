@@ -1,11 +1,15 @@
 #pragma once
 #include "Basics/Basics.hpp"
 
+
 class LabelBase {
 public:
-	virtual bool operator==(const LabelBase& other) const = 0;
+	virtual bool IsEqual(const LabelBase* const other) const = 0;
+	virtual std::unique_ptr<LabelBase> clone() const = 0;
 	virtual ~LabelBase() = default;
 };
+
+using constLabel = const LabelBase* const;
 
 template<class Name> class Label : public LabelBase {
 public:
@@ -14,10 +18,13 @@ public:
 	const Name& GetName() const {
 		return m_name;
 	}
-	bool operator==(const LabelBase& other) const override {
-		const auto otherLabel = dynamic_cast<const Label<Name>*>(&other);
-		if(otherLabel == nullptr) return false;
-		return m_name == otherLabel->GetName();
+	bool IsEqual(const LabelBase* const other) const override {
+		const auto otherCasted = dynamic_cast<const Label<Name>* const>(other);
+		if(otherCasted == nullptr) return false;
+		return m_name == otherCasted->GetName();
+	}
+	std::unique_ptr<LabelBase> clone() const override {
+		return std::make_unique<Label<Name>>(m_name);
 	}
 	~Label<Name>() override = default;
 private:

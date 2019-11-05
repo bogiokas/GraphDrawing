@@ -3,47 +3,119 @@
 #include "Physics/ForceBuilder.hpp"
 #include "Label.hpp"
 
-Graph::Graph(std::vector<std::unique_ptr<LabelBase>> V, std::vector<std::array<LabelBase*, 2>> E) : m_V(), m_E(), m_eventHandler(this) {
-	Init(std::move(V), std::move(E));
-}
-
-Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& indexPairs) : m_V(), m_E(), m_eventHandler(this) {
-	std::vector<std::unique_ptr<LabelBase>> V(n);
-	for(Index i = 0; i < n; ++i)
-		V[i] = std::make_unique<Label<Index>>(i);
-	Index m = indexPairs.size();
-	std::vector<std::array<LabelBase*, 2>> E(m);
-	for(Index i = 0; i < m; ++i)
-		E[i] = std::array<LabelBase*, 2>({ V[indexPairs[i][0]].get(), V[indexPairs[i][1]].get() });
-	Init(std::move(V), std::move(E));
-}
-
-template<class Name> Graph::Graph(std::vector<Name> names, const std::vector<std::array<Name, 2>>& namePairs)
-				: m_V(), m_E(), m_eventHandler(this) {
-	Index n = names.size();
-	std::vector<std::unique_ptr<LabelBase>> V(n);
-	for(Index i = 0; i < n; ++i)
-		V[i] = std::make_unique<Label<Name>>(names[i]);
-	Index m = namePairs.size();
-	std::vector<std::array<LabelBase*, 2>> E(m);
-	for(Index i = 0; i < m; ++i) {
-		auto it0 = find(names.begin(), names.end(), namePairs[i][0]);
-		assert(it0 != names.end());
-		auto it1 = find(names.begin(), names.end(), namePairs[i][1]);
-		assert(it1 != names.end());
-		E[i] = std::array<LabelBase*, 2>({ V[it0 - names.begin()].get(), V[it1 - names.begin()].get() });
-	}
-	Init(std::move(V), std::move(E));
-}
-
-void Graph::Init(std::vector<std::unique_ptr<LabelBase>> V, std::vector<std::array<LabelBase*, 2>> E) {
-	m_V.reserve(V.size());
-	for(auto& pLabel : V)
-		assert(InsertVertex(std::move(pLabel)));
-	m_E.reserve(E.size());
-	for(const auto& labelPair : E)
-		assert(InsertEdge(labelPair[0], labelPair[1]));
+Graph::Graph(const std::vector<constLabel>& labels, const std::vector<std::array<constLabel, 2>>& labelPairs)
+		: m_V(), m_E(), m_eventHandler(this) {
+	m_V.reserve(labels.size());
+	for(const auto& label : labels)
+		assert(InsertVertex(label));
 	ArrangeVerticesAtCircle();
+	m_E.reserve(labelPairs.size());
+	for(const auto& labelPair : labelPairs)
+		assert(InsertEdge(labelPair));
+}
+
+template<class Name> Graph::Graph(const std::vector<Name>& rawLabels, const std::vector<std::array<Name, 2>>& rawLabelPairs)
+		: m_V(), m_E(), m_eventHandler(this) {
+	m_V.reserve(rawLabels.size());
+	for(const auto& rawLabel : rawLabels) {
+		auto oLabel = Label<Name>(rawLabel);
+		assert(InsertVertex(&oLabel));
+	}
+	ArrangeVerticesAtCircle();
+	m_E.reserve(rawLabelPairs.size());
+	for(const auto& rawLabelPair : rawLabelPairs) {
+		auto oLabel0 = Label<Name>(rawLabelPair[0]);
+		auto oLabel1 = Label<Name>(rawLabelPair[1]);
+		assert(InsertEdge({ &oLabel0, &oLabel1 }));
+	}
+}
+
+Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& rawLabelPairs)
+		: m_V(), m_E(), m_eventHandler(this) {
+	m_V.reserve(n);
+	for(Index i=0; i<n; i++) {
+		auto oLabel = Label<Index>(i);
+		assert(InsertVertex(&oLabel));
+	}
+	ArrangeVerticesAtCircle();
+	m_E.reserve(rawLabelPairs.size());
+	for(const auto& rawLabelPair : rawLabelPairs) {
+		auto oLabel0 = Label<Index>(rawLabelPair[0]);
+		auto oLabel1 = Label<Index>(rawLabelPair[1]);
+		assert(InsertEdge({ &oLabel0, &oLabel1 }));
+	}
+}
+
+Graph::Graph(const std::vector<constLabel>& labels, const std::function<bool(constLabel, constLabel)> binRelation)
+		: m_V(), m_E(), m_eventHandler(this) {
+	m_V.reserve(labels.size());
+	for(const auto& label : labels)
+		assert(InsertVertex(label));
+	ArrangeVerticesAtCircle();
+	for(const auto& label0 : labels) {
+		for(const auto& label1 : labels) {
+			if(binRelation(label0, label1))
+				assert(InsertEdge({ label0, label1 }));
+		}
+	}
+}
+
+template<class Name> Graph::Graph(const std::vector<Name>& rawLabels, const std::function<bool(const Name&, const Name&)> rawBinRelation)
+		: m_V(), m_E(), m_eventHandler(this) {
+	m_V.reserve(rawLabels.size());
+	for(const auto& rawLabel : rawLabels) {
+		auto oLabel = Label<Name>(rawLabel);
+		assert(InsertVertex(&oLabel));
+	}
+	ArrangeVerticesAtCircle();
+	for(const auto& rawLabel0 : rawLabels) {
+		for(const auto& rawLabel1 : rawLabels) {
+			if(rawBinRelation(rawLabel0, rawLabel1)) {
+				auto oLabel0 = Label<Name>(rawLabel0);
+				auto oLabel1 = Label<Name>(rawLabel1);
+				assert(InsertEdge({ &oLabel0, &oLabel1 }));
+			}
+		}
+	}
+}
+
+
+Graph::Graph(Index n, const std::function<bool(Index, Index)> rawBinRelation)
+		: m_V(), m_E(), m_eventHandler(this) {
+	m_V.reserve(n);
+	for(Index i=0; i<n; i++) {
+		auto oLabel = Label<Index>(i);
+		assert(InsertVertex(&oLabel));
+	}
+	ArrangeVerticesAtCircle();
+	for(Index i=0; i<n; i++) {
+		for(Index j=0; j<n; j++) {
+			if(rawBinRelation(i, j)) {
+				auto oLabel0 = Label<Index>(i);
+				auto oLabel1 = Label<Index>(j);
+				assert(InsertEdge({ &oLabel0, &oLabel1 }));
+			}
+		}
+	}
+}
+
+bool Graph::InsertVertex(constLabel label) {
+	return m_V.insert(std::make_unique<Vertex>(std::move(label->clone()))).second;
+}
+
+bool Graph::InsertEdge(const std::array<constLabel, 2>& labelPair) {
+	auto v0 = FindVertex(labelPair[0]);
+	if(!v0.has_value()) return false;
+	auto v1 = FindVertex(labelPair[1]);
+	if(!v1.has_value()) return false;
+	return m_E.insert(std::make_unique<Edge>(*v0, *v1)).second;
+}
+
+std::optional<Vertex*> Graph::FindVertex(constLabel label) const {
+	auto it = std::find_if(m_V.begin(), m_V.end(), [label](const auto& v) { return v->GetLabel()->IsEqual(label); });
+	if(it == m_V.end())
+		return std::nullopt;
+	return it->get();
 }
 
 void Graph::Update() {
@@ -65,16 +137,18 @@ void Graph::Draw() const {
 	DrawHelper::Draw(m_V);
 }
 
-bool Graph::InsertVertex(std::unique_ptr<LabelBase> pLabel) {
-	return m_V.insert(std::make_unique<Vertex>(std::move(pLabel))).second;
+bool Graph::IsVertex(constLabel label) {
+	auto it = std::find_if(m_V.begin(), m_V.end(), [label](const auto& pV) { return pV->GetLabel()->IsEqual(label); });
+	return it != m_V.end();
 }
-bool Graph::InsertEdge(LabelBase* pLabel0, LabelBase* pLabel1) {
-	auto it0 = std::find_if(m_V.begin(), m_V.end(), [pLabel0](const auto& pV) { return pV->GetLabel() == pLabel0; });
-	if(it0 == m_V.end()) return false;
-	auto it1 = std::find_if(m_V.begin(), m_V.end(), [pLabel1](const auto& pV) { return pV->GetLabel() == pLabel1; });
-	if(it1 == m_V.end()) return false;
-	m_E.insert(std::make_unique<Edge>(it0->get(), it1->get()));
-	return true;
+
+bool Graph::IsEdge(const std::array<constLabel, 2> labelPair) {
+	if(!IsVertex(labelPair[0]) || !IsVertex(labelPair[1])) return false;
+	auto it = std::find_if(m_E.begin(), m_E.end(), [labelPair](const auto& pE) {
+			auto labels = pE->GetLabels();
+			return labels[0] == labelPair[0] && labels[1] == labelPair[1];
+	});
+	return it != m_E.end();
 }
 
 Vertex* Graph::LocateVertexAt(const Point2& pt) const {
@@ -84,12 +158,21 @@ Vertex* Graph::LocateVertexAt(const Point2& pt) const {
 	return nullptr;
 }
 
-const std::vector<std::array<const LabelBase*, 2>> Graph::GetEdgeLabels() const {
-	std::vector<std::array<const LabelBase*, 2>> edgeLabels;
-	edgeLabels.reserve(m_E.size());
+
+const std::vector<constLabel> Graph::GetVertexLabels() const {
+	std::vector<constLabel> labels;
+	labels.reserve(size());
+	for(const auto& v : m_V)
+		labels.push_back(v->GetLabel());
+	return labels;
+}
+const std::vector<std::array<constLabel, 2>> Graph::GetEdgeLabels() const {
+
+	std::vector<std::array<constLabel, 2>> labelPairs;
+	labelPairs.reserve(m_E.size());
 	for(const auto& e : m_E)
-		edgeLabels.push_back(e->GetLabels());
-	return edgeLabels;
+		labelPairs.push_back(e->GetLabels());
+	return labelPairs;
 }
 
 void Graph::ArrangeVerticesAtCircle(const double r) {

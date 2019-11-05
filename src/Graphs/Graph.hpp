@@ -18,16 +18,16 @@ using EdgeSet = std::unordered_set<
 
 class Graph {
 public:
-	Graph(std::vector<std::unique_ptr<LabelBase>> V, std::vector<std::array<LabelBase*, 2>> E);
-	Graph(Index n, const std::vector<std::array<Index, 2>>& indexPairs);
-	template<class Name> Graph(std::vector<Name> names, const std::vector<std::array<Name, 2>>& namePairs);
+	Graph(const std::vector<constLabel>& labels, const std::vector<std::array<constLabel, 2>>& labelPairs);
+	template<class Name> Graph(const std::vector<Name>& rawLabels, const std::vector<std::array<Name, 2>>& rawLabelPairs);
+	Graph(Index n, const std::vector<std::array<Index, 2>>& rawLabelPairs);
 
-	inline Index size() const {
-		return m_V.size();
-	}
-	inline GraphEventHandler& GetEventHandler() {
-		return m_eventHandler;
-	}
+	Graph(const std::vector<constLabel>& labels, const std::function<bool(constLabel, constLabel)> binRelation);
+	template<class Name> Graph(const std::vector<Name>& rawLabels, const std::function<bool(const Name&, const Name&)> rawBinRelation);
+	Graph(Index n, const std::function<bool(Index, Index)> rawBinRelation);
+
+	inline Index size() const { return m_V.size(); }
+	inline GraphEventHandler& GetEventHandler() { return m_eventHandler; }
 
 	double Density() {
 		return 2 * m_E.size() / (size() * (size() - 1));
@@ -35,14 +35,20 @@ public:
 
 	void Update();
 	void Draw() const;
-	bool InsertVertex(std::unique_ptr<LabelBase> pLabel);
-	bool InsertEdge(LabelBase* pLabel0, LabelBase* pLabel1);
-	Vertex* LocateVertexAt(const Point2& pt) const;
 
-	const std::vector<std::array<const LabelBase*, 2>> GetEdgeLabels() const;
+	bool IsVertex(constLabel label);
+	bool IsEdge(const std::array<constLabel, 2> labelPair);
+
+	const std::vector<constLabel> GetVertexLabels() const;
+	const std::vector<std::array<constLabel, 2>> GetEdgeLabels() const;
+
+	Vertex* LocateVertexAt(const Point2& pt) const;
 private:
-	void Init(std::vector<std::unique_ptr<LabelBase>> V,
-			std::vector<std::array<LabelBase*, 2>> E);
+	bool InsertVertex(constLabel rawLabel);
+	bool InsertEdge(const std::array<constLabel, 2>& rawLabelPair);
+
+	std::optional<Vertex*> FindVertex(constLabel rawLabel) const;
+
 	void ArrangeVerticesAtCircle(double r=0.5);
 	void MakeVerticesRepelEachOther(double intensity);
 	void MakeEdgesTryToKeepFixedDist(double dist, double intensity);
