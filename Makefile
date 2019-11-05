@@ -4,10 +4,10 @@ BUILD_DIR = build
 LOG_DIR = log
 
 ## logging flags - uncomment if terminal gets too crowded
-makeLogDir = mkdir -p $(LOG_DIR)
-LOGGING = 2> $(LOG_DIR)/make_$(notdir $@).log
-LOGGING_RUN = > $(LOG_DIR)/run.log
-rmEmptyLogFiles = find . -type f -empty -delete
+#makeLogDir = mkdir -p $(LOG_DIR)
+#LOGGING = 2> $(LOG_DIR)/make_$(notdir $@).log
+#LOGGING_RUN = > $(LOG_DIR)/run.log
+#rmEmptyLogFiles = find . -type f -empty -delete
 
 SRCS := $(shell find $(SRC_DIR) -name *.cpp)
 OBJS := $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)

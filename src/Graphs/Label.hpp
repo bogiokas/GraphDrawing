@@ -9,7 +9,7 @@ public:
 	virtual ~LabelBase() = default;
 };
 
-using constLabel = const LabelBase* const;
+using constLabel = const LabelBase*;
 
 template<class Name> class Label : public LabelBase {
 public:
