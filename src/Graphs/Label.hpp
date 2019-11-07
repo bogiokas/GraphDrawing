@@ -1,15 +1,16 @@
 #pragma once
 #include "Basics/Basics.hpp"
 
+class LabelBase;
+using constLabel = const LabelBase*;
 
 class LabelBase {
 public:
-	virtual bool IsEqual(const LabelBase* const other) const = 0;
+	virtual size_t Hash() const = 0;
+	virtual bool IsEqual(constLabel other) const = 0;
 	virtual std::unique_ptr<LabelBase> clone() const = 0;
 	virtual ~LabelBase() = default;
 };
-
-using constLabel = const LabelBase*;
 
 template<class Name> class Label : public LabelBase {
 public:
@@ -18,8 +19,11 @@ public:
 	const Name& GetName() const {
 		return m_name;
 	}
-	bool IsEqual(const LabelBase* const other) const override {
-		const auto otherCasted = dynamic_cast<const Label<Name>* const>(other);
+	size_t Hash() const override {
+		return std::hash<Name>()(m_name);
+	}
+	bool IsEqual(constLabel other) const override {
+		const auto otherCasted = dynamic_cast<const Label<Name>*>(other);
 		if(otherCasted == nullptr) return false;
 		return m_name == otherCasted->GetName();
 	}

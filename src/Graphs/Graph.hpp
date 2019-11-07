@@ -1,29 +1,63 @@
 #pragma once
-#include "Basics/Basics.hpp"
+#include "Basics.hpp"
+#include "PtrUnorderedSet.hpp"
 
-#include "Basics/Shapes.hpp"
+#include "Shapes.hpp"
 #include "Vertex.hpp"
 #include "Edge.hpp"
-#include "Graphs/GraphEventHandler.hpp"
+#include "GraphEventHandler.hpp"
 
-using VertexSet = std::unordered_set<
-			std::unique_ptr<Vertex>,
-			std::hash<std::unique_ptr<Vertex>>,
-			Unique_Ptr_Eq<Vertex>>;
+using VertexSet = PtrUnorderedSet<Vertex>;
+//std::unordered_set<
+//			std::unique_ptr<Vertex>,
+//			Unique_Ptr_Hash<Vertex>,
+//			Unique_Ptr_Eq<Vertex>>;
 
-using EdgeSet = std::unordered_set<
-			std::unique_ptr<Edge>,
-			std::hash<std::unique_ptr<Edge>>,
-			Unique_Ptr_Eq<Edge>>;
+using EdgeSet = PtrUnorderedSet<Edge>;
+//std::unordered_set<
+//			std::unique_ptr<Edge>,
+//			Unique_Ptr_Hash<Edge>,
+//			Unique_Ptr_Eq<Edge>>;
 
 class Graph {
 public:
 	Graph(const std::vector<constLabel>& labels, const std::vector<std::array<constLabel, 2>>& labelPairs);
-	template<class Name> Graph(const std::vector<Name>& rawLabels, const std::vector<std::array<Name, 2>>& rawLabelPairs);
+	template<class Name> Graph(const std::vector<Name>& rawLabels, const std::vector<std::array<Name, 2>>& rawLabelPairs)
+			: m_V(), m_E(), m_eventHandler(this) {
+		m_V.reserve(rawLabels.size());
+		for(const auto& rawLabel : rawLabels) {
+			auto oLabel = Label<Name>(rawLabel);
+			assert(InsertVertex(&oLabel));
+		}
+		ArrangeVerticesAtCircle();
+		m_E.reserve(rawLabelPairs.size());
+		for(const auto& rawLabelPair : rawLabelPairs) {
+			auto oLabel0 = Label<Name>(rawLabelPair[0]);
+			auto oLabel1 = Label<Name>(rawLabelPair[1]);
+			assert(InsertEdge({ &oLabel0, &oLabel1 }));
+		}
+	}
 	Graph(Index n, const std::vector<std::array<Index, 2>>& rawLabelPairs);
 
 	Graph(const std::vector<constLabel>& labels, const std::function<bool(constLabel, constLabel)> binRelation);
-	template<class Name> Graph(const std::vector<Name>& rawLabels, const std::function<bool(const Name&, const Name&)> rawBinRelation);
+	template<class Name> Graph(const std::vector<Name>& rawLabels, const std::function<bool(const Name&, const Name&)> rawBinRelation)
+			: m_V(), m_E(), m_eventHandler(this) {
+		m_V.reserve(rawLabels.size());
+		for(const auto& rawLabel : rawLabels) {
+			auto oLabel = Label<Name>(rawLabel);
+			assert(InsertVertex(&oLabel));
+		}
+		ArrangeVerticesAtCircle();
+		for(const auto& rawLabel0 : rawLabels) {
+			for(const auto& rawLabel1 : rawLabels) {
+				if(rawBinRelation(rawLabel0, rawLabel1)) {
+					auto oLabel0 = Label<Name>(rawLabel0);
+					auto oLabel1 = Label<Name>(rawLabel1);
+					assert(InsertEdge({ &oLabel0, &oLabel1 }));
+				}
+			}
+		}
+	}
 	Graph(Index n, const std::function<bool(Index, Index)> rawBinRelation);
 
 	inline Index size() const { return m_V.size(); }

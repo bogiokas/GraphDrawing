@@ -1,89 +1,74 @@
 #include "GraphBuilder.hpp"
 
+template<class Name> using binRelation = std::function<bool(const Name&, const Name&)>;
+
+template<class Name, typename F> binRelation<Name> makeRelation(F f) { return static_cast<binRelation<Name>>(f); }
 
 std::unique_ptr<Graph> GraphBuilder::IndependentVertices(Index n) {
-	std::vector<std::array<Index, 2>> edgePairs;
-	return std::make_unique<Graph>(n, edgePairs);
+	return std::make_unique<Graph>(n, [](const auto&, const auto&) { return false; });
 }
 
 
 std::unique_ptr<Graph> GraphBuilder::Path(Index n) {
-	std::vector<std::array<Index, 2>> edgePairs;
-	for(Index i = 0; i < n; ++i) {
-		edgePairs.push_back({i,i+1});
-	}
-	return std::make_unique<Graph>(n+1, edgePairs);
+	return std::make_unique<Graph>(n+1, [](const auto& i, const auto& j) { return i+1 == j; });
 }
 
 
 std::unique_ptr<Graph> GraphBuilder::Cycle(Index n) {
-	std::vector<std::array<Index, 2>> edgePairs;
-	for(Index i = 0; i < n-1; ++i) {
-		edgePairs.push_back({i,i+1});
-	}
-	edgePairs.push_back({n-1,0});
-	return std::make_unique<Graph>(n, edgePairs);
+	return std::make_unique<Graph>(n, [n](const auto& i, const auto& j) { return (i+1) % n == j % n; });
+}
+
+
+std::unique_ptr<Graph> GraphBuilder::Star(Index n) {
+	return std::make_unique<Graph>(n+1, [](const auto& i, const auto& j) { return i == 0 && j != i; });
 }
 
 
 std::unique_ptr<Graph> GraphBuilder::Complete(Index n) {
-	std::vector<std::array<Index, 2>> edgePairs;
-	for(Index i = 0; i < n; ++i) {
-		for(Index j = i+1; j < n; ++j) {
-			edgePairs.push_back({i,j});
-		}
-	}
-	return std::make_unique<Graph>(n, edgePairs);
+	return std::make_unique<Graph>(n, [](const auto& i, const auto& j) { return i < j; });
 }
 
 
 std::unique_ptr<Graph> GraphBuilder::BipartiteComplete(Index k1, Index k2) {
-	std::vector<std::array<Index, 2>> edgePairs;
-	for(Index i = 0; i < k1; ++i) {
-		for(Index j = k1; j < k1+k2; ++j) {
-			edgePairs.push_back({i,j});
-		}
-	}
-	return std::make_unique<Graph>(k1+k2, edgePairs);
+	using Name = std::pair<Index, Index>;
+	std::vector<Name> labels;
+	for(Index i = 0; i < k1; ++i)
+		labels.push_back(std::make_pair(0, i));
+	for(Index i = 0; i < k2; ++i)
+		labels.push_back(std::make_pair(1, i));
+	return std::make_unique<Graph>(labels, makeRelation<Name>([](const auto& i, const auto& j) { return i.first < j.first; }));
 }
 
 
 std::unique_ptr<Graph> GraphBuilder::Cube(Index dim) {
 	Index n = Math::powInd(2, dim);
-	std::vector<std::array<Index, 2>> edgePairs;
+	std::vector<std::array<Index, 2>> labelPairs;
 	for(Index i = 0; i < n; ++i) {
 		for(Index d = 0; d < dim; ++d) {
 			if((i / Math::powInd(2,d)) % 2 == 0)
-				edgePairs.push_back( {i,i+Math::powInd(2,d)} );
+				labelPairs.push_back( {i,i+Math::powInd(2,d)} );
 		}
 	}
-	return std::make_unique<Graph>(n, edgePairs);
+	return std::make_unique<Graph>(n, labelPairs);
 }
 
 
 std::unique_ptr<Graph> GraphBuilder::Cross(Index dim) {
 	Index n = 2 * dim;
-	std::vector<std::array<Index, 2>> edgePairs;
+	std::vector<std::array<Index, 2>> labelPairs;
 	for(Index i = 0; i < dim; ++i) {
 		for(Index j = 0; j < 2*i; ++j) {
-			edgePairs.push_back( {j,2*i} );
-			edgePairs.push_back( {j,2*i+1} );
+			labelPairs.push_back( {j,2*i} );
+			labelPairs.push_back( {j,2*i+1} );
 		}
 	}
-	return std::make_unique<Graph>(n, edgePairs);
+	return std::make_unique<Graph>(n, labelPairs);
 }
 
 
 //std::unique_ptr<Graph> GraphBuilder::Kneser(Index n, Index k) {
 //}
 
-
-//std::unique_ptr<Graph> GraphBuilder::Dual(const Graph& G) {
-//
-//
-//
-//	
-//}
 
 std::unique_ptr<Graph> GraphBuilder::Dual(const Graph& G) {
 	const auto labels = G.GetVertexLabels();
@@ -92,23 +77,17 @@ std::unique_ptr<Graph> GraphBuilder::Dual(const Graph& G) {
 	});
 }
 
-//std::unique_ptr<Graph> GraphBuilder::Dual(const Graph& G) {
-//	Index n = G.size();
-//	auto edgePairsG = G.GetEdgeLabels();
-//	std::vector<std::array<Index, 2>> edgePairs;
-//	for(Index i = 0; i < n; ++i) {
-//		for(Index j = i+1; j < n; ++j) {
-//			std::array<std::array<Index, 2>, 2> pairs;
-//			pairs[0] = {i,j};
-//			pairs[1] = {j,i};
-//			if(std::find_first_of(edgePairsG.begin(), edgePairsG.end(), pairs.begin(), pairs.end()) == edgePairsG.end())
-//				edgePairs.push_back({i,j});
-//		}
-//	}
-//	return std::make_unique<Graph>(n, edgePairs);
-//}
-
-
+std::unique_ptr<Graph> GraphBuilder::Union(const Graph& G1, const Graph& G2) {
+	const auto labels1 = G1.GetVertexLabels();
+	const auto labels2 = G2.GetVertexLabels();
+	std::vector<constLabel> labels;
+	labels.reserve(labels1.size() + labels2.size());
+	labels.insert(labels.end(), labels1.begin(), labels1.end());
+	labels.insert(labels.end(), labels2.begin(), labels2.end());
+	return std::make_unique<Graph>(labels, [&G1, &G2](const auto& label0, const auto& label1) {
+		return G1.IsEdge( {label0, label1} ) || G2.IsEdge( {label0, label1} );
+	});
+}
 //std::unique_ptr<Graph> GraphBuilder::DisjointUnion(const Graph& G1, const Graph& G2) {
 //	const auto labels1 = G1.GetVertexLabels();
 //	const auto labels2 = G2.GetVertexLabels();
@@ -120,13 +99,13 @@ std::unique_ptr<Graph> GraphBuilder::Dual(const Graph& G) {
 //}
 
 //std::unique_ptr<Graph> GraphBuilder::DisjointUnion(const Graph& G1, const Graph& G2) {
-//	const std::vector<std::array<Index, 2>>& edgePairs1 = G1.GetEdgeLabels();
+//	const std::vector<std::array<Index, 2>>& labelPairs1 = G1.GetEdgeLabels();
 //	Index n1 = G1.size();
-//	const std::vector<std::array<Index, 2>>& edgePairs2 = G2.GetEdgeLabels();
+//	const std::vector<std::array<Index, 2>>& labelPairs2 = G2.GetEdgeLabels();
 //	Index n2 = G2.size();
-//	std::vector<std::array<Index, 2>> edgePairs = edgePairs1;
-//	for(const auto& edgePair : edgePairs2)
-//		edgePairs.push_back( { edgePair[0] + n1, edgePair[1] + n1 });
-//	return std::make_unique<Graph>(n1+n2, edgePairs);
+//	std::vector<std::array<Index, 2>> labelPairs = labelPairs1;
+//	for(const auto& edgePair : labelPairs2)
+//		labelPairs.push_back( { edgePair[0] + n1, edgePair[1] + n1 });
+//	return std::make_unique<Graph>(n1+n2, labelPairs);
 //}
 

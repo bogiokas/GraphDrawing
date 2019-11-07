@@ -17,6 +17,9 @@ public:
 	inline const Point2& GetPt() const { return m_node.GetPos(); }
 	inline constLabel GetLabel() const { return m_pLabel.get(); }
 
+	inline size_t Hash() const {
+		return m_pLabel->Hash();
+	}
 	inline bool operator==(const Vertex& other) const {
 		return m_pLabel->IsEqual(other.GetLabel());
 	}

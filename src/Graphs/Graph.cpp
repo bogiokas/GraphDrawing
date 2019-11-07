@@ -14,22 +14,6 @@ Graph::Graph(const std::vector<constLabel>& labels, const std::vector<std::array
 		assert(InsertEdge(labelPair));
 }
 
-template<class Name> Graph::Graph(const std::vector<Name>& rawLabels, const std::vector<std::array<Name, 2>>& rawLabelPairs)
-		: m_V(), m_E(), m_eventHandler(this) {
-	m_V.reserve(rawLabels.size());
-	for(const auto& rawLabel : rawLabels) {
-		auto oLabel = Label<Name>(rawLabel);
-		assert(InsertVertex(&oLabel));
-	}
-	ArrangeVerticesAtCircle();
-	m_E.reserve(rawLabelPairs.size());
-	for(const auto& rawLabelPair : rawLabelPairs) {
-		auto oLabel0 = Label<Name>(rawLabelPair[0]);
-		auto oLabel1 = Label<Name>(rawLabelPair[1]);
-		assert(InsertEdge({ &oLabel0, &oLabel1 }));
-	}
-}
-
 Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& rawLabelPairs)
 		: m_V(), m_E(), m_eventHandler(this) {
 	m_V.reserve(n);
@@ -49,8 +33,9 @@ Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& rawLabelPairs)
 Graph::Graph(const std::vector<constLabel>& labels, const std::function<bool(constLabel, constLabel)> binRelation)
 		: m_V(), m_E(), m_eventHandler(this) {
 	m_V.reserve(labels.size());
-	for(const auto& label : labels)
+	for(const auto& label : labels) {
 		assert(InsertVertex(label));
+	}
 	ArrangeVerticesAtCircle();
 	for(const auto& label0 : labels) {
 		for(const auto& label1 : labels) {
@@ -59,26 +44,6 @@ Graph::Graph(const std::vector<constLabel>& labels, const std::function<bool(con
 		}
 	}
 }
-
-template<class Name> Graph::Graph(const std::vector<Name>& rawLabels, const std::function<bool(const Name&, const Name&)> rawBinRelation)
-		: m_V(), m_E(), m_eventHandler(this) {
-	m_V.reserve(rawLabels.size());
-	for(const auto& rawLabel : rawLabels) {
-		auto oLabel = Label<Name>(rawLabel);
-		assert(InsertVertex(&oLabel));
-	}
-	ArrangeVerticesAtCircle();
-	for(const auto& rawLabel0 : rawLabels) {
-		for(const auto& rawLabel1 : rawLabels) {
-			if(rawBinRelation(rawLabel0, rawLabel1)) {
-				auto oLabel0 = Label<Name>(rawLabel0);
-				auto oLabel1 = Label<Name>(rawLabel1);
-				assert(InsertEdge({ &oLabel0, &oLabel1 }));
-			}
-		}
-	}
-}
-
 
 Graph::Graph(Index n, const std::function<bool(Index, Index)> rawBinRelation)
 		: m_V(), m_E(), m_eventHandler(this) {

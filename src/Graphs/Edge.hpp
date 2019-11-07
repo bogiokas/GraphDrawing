@@ -1,6 +1,6 @@
 #pragma once
-#include "Basics/Basics.hpp"
-#include "Basics/Shapes.hpp"
+#include "Basics.hpp"
+#include "Shapes.hpp"
 #include "Label.hpp"
 #include "Vertex.hpp"
 
@@ -12,6 +12,9 @@ public:
 	const Segment2 GetSegment() const;
 	const std::array<constLabel, 2> GetLabels() const;
 
+	inline size_t Hash() const {
+		return vertices[0]->Hash() ^ vertices[1]->Hash();
+	}
 	bool operator==(const Edge& other) const {
 		const auto& otherVertices = other.GetVertices();
 		return (*vertices[0] == *otherVertices[0] && *vertices[1] == *otherVertices[1])
