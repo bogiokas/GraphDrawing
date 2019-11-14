@@ -1,8 +1,8 @@
 #pragma once
-#include "Basics.hpp"
-#include "Shapes.hpp"
-#include "Label.hpp"
-#include "Vertex.hpp"
+#include "Basics/Basics.hpp"
+#include "Basics/Shapes.hpp"
+#include "Graphs/Label.hpp"
+#include "Graphs/Vertex.hpp"
 
 class Edge {
 public:

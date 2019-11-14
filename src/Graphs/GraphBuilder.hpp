@@ -1,6 +1,6 @@
 #pragma once
-#include "Basics.hpp"
-#include "Graph.hpp"
+#include "Basics/Basics.hpp"
+#include "Graphs/Graph.hpp"
 
 class GraphBuilder {
 public:

@@ -1,23 +1,14 @@
 #pragma once
-#include "Basics.hpp"
-#include "PtrUnorderedSet.hpp"
+#include "Basics/Basics.hpp"
+#include "Basics/PtrUnorderedSet.hpp"
 
-#include "Shapes.hpp"
-#include "Vertex.hpp"
-#include "Edge.hpp"
-#include "GraphEventHandler.hpp"
+#include "Basics/Shapes.hpp"
+#include "Graphs/Vertex.hpp"
+#include "Graphs/Edge.hpp"
+#include "Graphs/GraphEventHandler.hpp"
 
 using VertexSet = PtrUnorderedSet<Vertex>;
-//std::unordered_set<
-//			std::unique_ptr<Vertex>,
-//			Unique_Ptr_Hash<Vertex>,
-//			Unique_Ptr_Eq<Vertex>>;
-
 using EdgeSet = PtrUnorderedSet<Edge>;
-//std::unordered_set<
-//			std::unique_ptr<Edge>,
-//			Unique_Ptr_Hash<Edge>,
-//			Unique_Ptr_Eq<Edge>>;
 
 class Graph {
 public:
@@ -39,6 +30,7 @@ public:
 	}
 	Graph(Index n, const std::vector<std::array<Index, 2>>& rawLabelPairs);
 
+	Graph(const std::vector<std::unique_ptr<LabelBase>> labels, const std::function<bool(constLabel, constLabel)> binRelation);
 	Graph(const std::vector<constLabel>& labels, const std::function<bool(constLabel, constLabel)> binRelation);
 	template<class Name> Graph(const std::vector<Name>& rawLabels, const std::function<bool(const Name&, const Name&)> rawBinRelation)
 			: m_V(), m_E(), m_eventHandler(this) {

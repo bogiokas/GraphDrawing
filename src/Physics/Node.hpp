@@ -2,7 +2,7 @@
 #include "Basics/Basics.hpp"
 
 #include "Basics/Shapes.hpp"
-#include "Force.hpp"
+#include "Physics/Force.hpp"
 
 class Node {
 public:

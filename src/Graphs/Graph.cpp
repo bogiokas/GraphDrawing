@@ -1,7 +1,7 @@
-#include "Graph.hpp"
+#include "Graphs/Graph.hpp"
 #include "Output/DrawHelper.hpp"
 #include "Physics/ForceBuilder.hpp"
-#include "Label.hpp"
+#include "Graphs/Label.hpp"
 
 Graph::Graph(const std::vector<constLabel>& labels, const std::vector<std::array<constLabel, 2>>& labelPairs)
 		: m_V(), m_E(), m_eventHandler(this) {
@@ -27,6 +27,20 @@ Graph::Graph(Index n, const std::vector<std::array<Index, 2>>& rawLabelPairs)
 		auto oLabel0 = Label<Index>(rawLabelPair[0]);
 		auto oLabel1 = Label<Index>(rawLabelPair[1]);
 		assert(InsertEdge({ &oLabel0, &oLabel1 }));
+	}
+}
+
+Graph::Graph(const std::vector<std::unique_ptr<LabelBase>> labels, const std::function<bool(constLabel, constLabel)> binRelation)
+		: m_V(), m_E(), m_eventHandler(this) {
+	m_V.reserve(labels.size());
+	for(const auto& label : labels) {
+		assert(InsertVertex(label.get()));
+	}
+	for(const auto& label0 : labels) {
+		for(const auto& label1 : labels) {
+			if(binRelation(label0.get(), label1.get()))
+				assert(InsertEdge({ label0.get(), label1.get() }));
+		}
 	}
 }
 

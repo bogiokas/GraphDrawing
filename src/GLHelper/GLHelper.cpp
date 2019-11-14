@@ -1,4 +1,4 @@
-#include "GLHelper.hpp"
+#include "GLHelper/GLHelper.hpp"
 #include "Graphs/Graph.hpp"
 
 GraphEventHandler& GLHelper::GetHandler(GLFWwindow* w) {

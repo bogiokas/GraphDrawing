@@ -1,4 +1,4 @@
-#include "GraphEventHandler.hpp"
+#include "Graphs/GraphEventHandler.hpp"
 #include "Graphs/Graph.hpp"
 
 void GraphEventHandler::SelectVertex() {

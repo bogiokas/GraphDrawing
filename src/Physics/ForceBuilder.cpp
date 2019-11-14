@@ -1,4 +1,4 @@
-#include "ForceBuilder.hpp"
+#include "Physics/ForceBuilder.hpp"
 
 Force ForceBuilder::AttractionForce(const Node& nodeFrom, const Node& nodeTo) {
 	double forceMagnitude = GravitationalForceMagnitude(nodeFrom, nodeTo);

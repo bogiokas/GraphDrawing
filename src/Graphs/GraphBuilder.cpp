@@ -1,7 +1,8 @@
-#include "GraphBuilder.hpp"
+#include "Graphs/GraphBuilder.hpp"
+#include "Basics/Math.hpp"
+#include "Graphs/LabelBuilder.hpp"
 
 template<class Name> using binRelation = std::function<bool(const Name&, const Name&)>;
-
 template<class Name, typename F> binRelation<Name> makeRelation(F f) { return static_cast<binRelation<Name>>(f); }
 
 std::unique_ptr<Graph> GraphBuilder::IndependentVertices(Index n) {
@@ -32,6 +33,7 @@ std::unique_ptr<Graph> GraphBuilder::Complete(Index n) {
 std::unique_ptr<Graph> GraphBuilder::BipartiteComplete(Index k1, Index k2) {
 	using Name = std::pair<Index, Index>;
 	std::vector<Name> labels;
+	labels.reserve(k1 + k2);
 	for(Index i = 0; i < k1; ++i)
 		labels.push_back(std::make_pair(0, i));
 	for(Index i = 0; i < k2; ++i)
@@ -41,28 +43,19 @@ std::unique_ptr<Graph> GraphBuilder::BipartiteComplete(Index k1, Index k2) {
 
 
 std::unique_ptr<Graph> GraphBuilder::Cube(Index dim) {
-	Index n = Math::powInd(2, dim);
-	std::vector<std::array<Index, 2>> labelPairs;
-	for(Index i = 0; i < n; ++i) {
-		for(Index d = 0; d < dim; ++d) {
-			if((i / Math::powInd(2,d)) % 2 == 0)
-				labelPairs.push_back( {i,i+Math::powInd(2,d)} );
-		}
-	}
-	return std::make_unique<Graph>(n, labelPairs);
+	return std::make_unique<Graph>(Math::powOf2(dim), [](const auto& i, const auto& j) { return i<j && Math::isPowOf2( j ^ i );});
 }
 
 
 std::unique_ptr<Graph> GraphBuilder::Cross(Index dim) {
-	Index n = 2 * dim;
-	std::vector<std::array<Index, 2>> labelPairs;
+	using Name = std::pair<bool, Index>;
+	std::vector<Name> labels;
+	labels.reserve(2 * dim);
 	for(Index i = 0; i < dim; ++i) {
-		for(Index j = 0; j < 2*i; ++j) {
-			labelPairs.push_back( {j,2*i} );
-			labelPairs.push_back( {j,2*i+1} );
-		}
+		labels.push_back(std::make_pair(true, i));
+		labels.push_back(std::make_pair(false, i));
 	}
-	return std::make_unique<Graph>(n, labelPairs);
+	return std::make_unique<Graph>(labels, makeRelation<Name>([](const auto& i, const auto& j) { return i.second < j.second; }));
 }
 
 
@@ -71,8 +64,7 @@ std::unique_ptr<Graph> GraphBuilder::Cross(Index dim) {
 
 
 std::unique_ptr<Graph> GraphBuilder::Dual(const Graph& G) {
-	const auto labels = G.GetVertexLabels();
-	return std::make_unique<Graph>(labels, [&G](const auto& label0, const auto& label1) {
+	return std::make_unique<Graph>(G.GetVertexLabels(), [&G](const auto& label0, const auto& label1) {
 		return !label0->IsEqual(label1) && !G.IsEdge( {label0, label1} );
 	});
 }
@@ -88,15 +80,23 @@ std::unique_ptr<Graph> GraphBuilder::Union(const Graph& G1, const Graph& G2) {
 		return G1.IsEdge( {label0, label1} ) || G2.IsEdge( {label0, label1} );
 	});
 }
-//std::unique_ptr<Graph> GraphBuilder::DisjointUnion(const Graph& G1, const Graph& G2) {
-//	const auto labels1 = G1.GetVertexLabels();
-//	const auto labels2 = G2.GetVertexLabels();
-//	std::vector<LabelBase*> labels;
-//	labels.reserve(labels1.size() + labels2.size());
+
+std::unique_ptr<Graph> GraphBuilder::DisjointUnion(const Graph& G1, const Graph& G2) {
+	const auto labels1 = G1.GetVertexLabels();
+	const auto labels2 = G2.GetVertexLabels();
+	std::vector<std::unique_ptr<LabelBase>> labels;
+	labels.reserve(labels1.size() + labels2.size());
+	for(const auto& label : labels1) {
+		labels.push_back(std::move(label->cloneAndAddExtraInfo(0)));
+		//labels.push_back(std::move(LabelBuilder::CloneLabelAndAddInfo(*label, 0)));
+	}
 //	for(const auto& label : labels1) {
-//		
+//		labels.push_back(std::move(LabelBuilder::CloneLabelAndAddInfo(*label, 1)));
 //	}
-//}
+	return std::make_unique<Graph>(std::move(labels), [&G1, &G2](const auto& label0, const auto& label1) {
+		return G1.IsEdge( {label0, label1} ) || G2.IsEdge( {label0, label1} );
+	});
+}
 
 //std::unique_ptr<Graph> GraphBuilder::DisjointUnion(const Graph& G1, const Graph& G2) {
 //	const std::vector<std::array<Index, 2>>& labelPairs1 = G1.GetEdgeLabels();

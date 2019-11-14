@@ -1,5 +1,5 @@
-#include "Edge.hpp"
-#include "Vertex.hpp"
+#include "Graphs/Edge.hpp"
+#include "Graphs/Vertex.hpp"
 
 const std::array<Vertex*, 2>& Edge::GetVertices() const {
 	return vertices;

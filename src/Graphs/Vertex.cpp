@@ -1,4 +1,4 @@
-#include "Vertex.hpp"
+#include "Graphs/Vertex.hpp"
 
 void Vertex::FixNodeToPosition(const Point2& pt) {
 	m_node.StayStill();

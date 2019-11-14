@@ -13,6 +13,7 @@ int main() {
 	//auto pG = GraphBuilder::Dual(*GraphBuilder::Cycle(26));
 	//auto pG = GraphBuilder::Union(*GraphBuilder::Cross(4), *GraphBuilder::Cross(4));
 	//auto pG = GraphBuilder::BipartiteComplete(3,3);
+	//auto pG = GraphBuilder::Cube(3);
 
 	GLHelper gl(pG.get());
 	while(gl.IsActive()) {

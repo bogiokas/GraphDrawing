@@ -7,6 +7,7 @@ LOG_DIR = log
 makeLogDir = mkdir -p $(LOG_DIR)
 LOGGING = 2> $(LOG_DIR)/make_$(notdir $@).log
 LOGGING_RUN = > $(LOG_DIR)/run.log
+rmLogFiles = rm -f ./log/*
 rmEmptyLogFiles = find . -type f -empty -delete
 
 SRCS := $(shell find $(SRC_DIR) -name *.cpp)
@@ -24,11 +25,12 @@ openGLFlags = -lglfw -lGL -lGLEW -lX11
 allFlags = $(versionFlags) $(warningFlags) $(openGLFlags) $(depFlags) $(incFlags)
 
 $(Executable): $(OBJS)
+	$(rmLogFiles)
 	$(makeLogDir)
 	$(CXX) $(OBJS) $(allFlags) -o $@ $(LOGGING)
 	$(rmEmptyLogFiles)
-	./$@ $(LOGGING_RUN)
-	$(rmEmptyLogFiles)
+#	./$@ $(LOGGING_RUN)
+#	$(rmEmptyLogFiles)
 	
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
