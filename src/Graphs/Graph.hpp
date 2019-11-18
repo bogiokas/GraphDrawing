@@ -12,45 +12,26 @@ using EdgeSet = PtrUnorderedSet<Edge>;
 
 class Graph {
 public:
-	Graph(const std::vector<constLabel>& labels, const std::vector<std::array<constLabel, 2>>& labelPairs);
-	template<class Name> Graph(const std::vector<Name>& rawLabels, const std::vector<std::array<Name, 2>>& rawLabelPairs)
+	Graph(const std::vector<Label>& labels, const std::vector<std::array<Label, 2>>& labelPairs);
+	template<class T> Graph(const std::vector<T>& names, const std::vector<std::array<T, 2>>& namePairs)
 			: m_V(), m_E(), m_eventHandler(this) {
-		m_V.reserve(rawLabels.size());
-		for(const auto& rawLabel : rawLabels) {
-			auto oLabel = Label<Name>(rawLabel);
-			assert(InsertVertex(&oLabel));
-		}
-		ArrangeVerticesAtCircle();
-		m_E.reserve(rawLabelPairs.size());
-		for(const auto& rawLabelPair : rawLabelPairs) {
-			auto oLabel0 = Label<Name>(rawLabelPair[0]);
-			auto oLabel1 = Label<Name>(rawLabelPair[1]);
-			assert(InsertEdge({ &oLabel0, &oLabel1 }));
-		}
+		Init(CreateLabels(names), CreateLabelPairs(namePairs));
 	}
 	Graph(Index n, const std::vector<std::array<Index, 2>>& rawLabelPairs);
 
-	Graph(const std::vector<std::unique_ptr<LabelBase>> labels, const std::function<bool(constLabel, constLabel)> binRelation);
-	Graph(const std::vector<constLabel>& labels, const std::function<bool(constLabel, constLabel)> binRelation);
-	template<class Name> Graph(const std::vector<Name>& rawLabels, const std::function<bool(const Name&, const Name&)> rawBinRelation)
+	Graph(const std::vector<Label>& labels, const std::function<bool(Label, Label)> binRelation);
+	template<class T> Graph(const std::vector<T>& names, const std::function<bool(const T&, const T&)> binRelation)
 			: m_V(), m_E(), m_eventHandler(this) {
-		m_V.reserve(rawLabels.size());
-		for(const auto& rawLabel : rawLabels) {
-			auto oLabel = Label<Name>(rawLabel);
-			assert(InsertVertex(&oLabel));
-		}
-		ArrangeVerticesAtCircle();
-		for(const auto& rawLabel0 : rawLabels) {
-			for(const auto& rawLabel1 : rawLabels) {
-				if(rawBinRelation(rawLabel0, rawLabel1)) {
-					auto oLabel0 = Label<Name>(rawLabel0);
-					auto oLabel1 = Label<Name>(rawLabel1);
-					assert(InsertEdge({ &oLabel0, &oLabel1 }));
-				}
+		std::vector<std::array<Label, 2>> labelPairs;
+		for(const auto& name0 : names) {
+			for(const auto& name1 : names) {
+				if(binRelation(name0, name1))
+					labelPairs.push_back({Label(name0), Label(name1)});
 			}
 		}
+		Init(CreateLabels(names), labelPairs);
 	}
-	Graph(Index n, const std::function<bool(Index, Index)> rawBinRelation);
+	Graph(Index n, const std::function<bool(Index, Index)> binRelation);
 
 	inline Index size() const { return m_V.size(); }
 	inline GraphEventHandler& GetEventHandler() { return m_eventHandler; }
@@ -62,18 +43,35 @@ public:
 	void Update();
 	void Draw() const;
 
-	bool IsVertex(constLabel label) const;
-	bool IsEdge(const std::array<constLabel, 2> labelPair) const;
+	bool IsVertex(const Label& label) const;
+	bool IsEdge(const std::array<Label, 2>& labelPair) const;
 
-	const std::vector<constLabel> GetVertexLabels() const;
-	const std::vector<std::array<constLabel, 2>> GetEdgeLabels() const;
+	std::vector<Label> GetVertexLabels() const;
+	std::vector<std::array<Label, 2>> GetEdgeLabels() const;
 
 	Vertex* LocateVertexAt(const Point2& pt) const;
 private:
-	bool InsertVertex(constLabel rawLabel);
-	bool InsertEdge(const std::array<constLabel, 2>& rawLabelPair);
+	template<class T> std::vector<Label> CreateLabels(std::vector<T> names) {
+		std::vector<Label> labels;
+		labels.reserve(names.size());
+		for(const auto& name : names)
+			labels.emplace_back(name);
+		return labels;
+	}
+	std::vector<Label> CreateLabels(Index n);
+	template<class T> std::vector<std::array<Label, 2>> CreateLabelPairs(std::vector<std::array<T, 2>> namePairs) {
+		std::vector<std::array<Label, 2>> labelPairs;
+		labelPairs.reserve(namePairs.size());
+		for(const auto& namePair : namePairs)
+			labelPairs.push_back({Label(namePair[0]), Label(namePair[1])});
+		return labelPairs;
+	}
 
-	std::optional<Vertex*> FindVertex(constLabel rawLabel) const;
+	void Init(const std::vector<Label>& labels, const std::vector<std::array<Label, 2>>& labelPairs);
+	bool InsertVertex(const Label& label);
+	bool InsertEdge(const std::array<Label, 2>& labelPair);
+
+	std::optional<Vertex*> FindVertex(const Label& label) const;
 
 	void ArrangeVerticesAtCircle(double r=0.5);
 	void MakeVerticesRepelEachOther(double intensity);

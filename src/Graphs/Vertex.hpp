@@ -7,7 +7,7 @@
 
 class Vertex {
 public:
-	Vertex(std::unique_ptr<LabelBase> pLabel) : m_pLabel(std::move(pLabel)), m_node() {}
+	Vertex(Label label) : m_label(label), m_node() {}
 
 	void FixNodeToPosition(const Point2& pt);
 	void ApplyForceToNode(const Force& force, double intensity);
@@ -15,19 +15,19 @@ public:
 
 	inline const Node& GetNode() const { return m_node; }
 	inline const Point2& GetPt() const { return m_node.GetPos(); }
-	inline constLabel GetLabel() const { return m_pLabel.get(); }
+	inline Label GetLabel() const { return m_label; }
 
 	inline size_t Hash() const {
-		return m_pLabel->Hash();
+		return m_label.Hash();
 	}
 	inline bool operator==(const Vertex& other) const {
-		return m_pLabel->IsEqual(other.GetLabel());
+		return m_label == other.m_label;
 	}
 	inline bool operator!=(const Vertex& other) const {
 		return !(*this == other);
 	}
 private:
-	std::unique_ptr<LabelBase> m_pLabel;
+	Label m_label;
 	Node m_node;
 };
 

@@ -1,6 +1,4 @@
-"column 110 made gray
 :set colorcolumn=110
-:highlight ColorColumn ctermbg=darkgray
 
 :set makeprg=make;./test
 

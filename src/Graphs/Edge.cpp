@@ -9,7 +9,7 @@ const Segment2 Edge::GetSegment() const {
 	return Segment2(vertices[0]->GetPt(), vertices[1]->GetPt());
 }
 
-const std::array<constLabel, 2> Edge::GetLabels() const {
-	std::array<constLabel, 2> labels = { vertices[0]->GetLabel(), vertices[1]->GetLabel() };
+const std::array<Label, 2> Edge::GetLabels() const {
+	std::array<Label, 2> labels = { vertices[0]->GetLabel(), vertices[1]->GetLabel() };
 	return labels;
 }
