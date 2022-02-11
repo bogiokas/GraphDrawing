@@ -6,18 +6,25 @@ GraphEventHandler& GLHelper::GetHandler(GLFWwindow* w) {
 	return G->GetEventHandler();
 }
 
-Point2 GLHelper::RawPosToPoint(double i, double j) {
-	return Point2(2*i/WIDTH-1, 1-2*j/HEIGHT);
+Point2 GLHelper::RawPosToPoint(GLFWwindow* w, double i, double j) {
+	int width, height;
+	glfwGetWindowSize(w, &width, &height);
+
+	return Point2(2*i/width-1, 1-2*j/height);
+}
+
+void GLHelper::WindowSizeCallback(GLFWwindow* w, int width, int height) {
+	glViewport(0, 0, width, height);
 }
 
 void GLHelper::CursorPosCallback(GLFWwindow* w, double i, double j) {
-	GetHandler(w).PointerPos(RawPosToPoint(i, j));
+	GetHandler(w).PointerPos(RawPosToPoint(w, i, j));
 }
 
 void GLHelper::MouseButtonCallback(GLFWwindow* w, GLFWResult button, GLFWResult action, GLFWResult /*mods*/) {
 	double i, j;
 	glfwGetCursorPos(w, &i, &j);
-	Point2 pt = RawPosToPoint(i, j);
+	Point2 pt = RawPosToPoint(w, i, j);
 	if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 		GetHandler(w).SelectVertex();
 	if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)

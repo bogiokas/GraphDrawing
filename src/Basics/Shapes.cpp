@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 
 void Shape::ChooseColor() const {
-	glColor4f(m_col.r, m_col.g, m_col.b, m_col.a);
+	glColor4f((GLfloat)m_col.r, (GLfloat)m_col.g, (GLfloat)m_col.b, (GLfloat)m_col.a);
 }
 
 void Point2::AddToGL() const { 

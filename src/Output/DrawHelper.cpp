@@ -1,5 +1,9 @@
 #include "DrawHelper.hpp"
 
+#ifdef _WIN32
+#include<Windows.h>
+#endif
+
 #include<GL/gl.h>
 
 template<> void DrawHelper::Draw(const Node& node) {

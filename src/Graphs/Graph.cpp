@@ -1,5 +1,5 @@
 #include "Graph.hpp"
-#include "DrawHelper.hpp"
+#include "Output/DrawHelper.hpp"
 #include "Physics/ForceBuilder.hpp"
 #include "Label.hpp"
 

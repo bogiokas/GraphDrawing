@@ -5,8 +5,8 @@
 #include<GLFW/glfw3.h>
 
 using GLFWResult = int;
-static constexpr int WIDTH = 1024;
-static constexpr int HEIGHT = 600;
+static constexpr int WIDTH = 1280;
+static constexpr int HEIGHT = 960;
 
 class Graph;
 
@@ -15,7 +15,7 @@ public:
 	GLHelper(Graph* pG) : window(nullptr) {
 		glfwInit();
 #ifdef _DEBUG
-		window = glfwCreateWindow(640, 480, "Let There Be Graphs", nullptr, nullptr);
+		window = glfwCreateWindow(WIDTH, HEIGHT, "Let There Be Graphs", nullptr, nullptr);
 #else
 		window = glfwCreateWindow(WIDTH, HEIGHT, "Let There Be Graphs", glfwGetPrimaryMonitor(), nullptr);
 #endif
@@ -32,6 +32,7 @@ public:
 	}
 	void BeginLoop() {
 		glClear(GL_COLOR_BUFFER_BIT);
+		glfwSetWindowSizeCallback(window, WindowSizeCallback);
 		glfwSetCursorPosCallback(window, CursorPosCallback);
 		glfwSetMouseButtonCallback(window, MouseButtonCallback);
 		glfwSetKeyCallback(window, KeyCallback);
@@ -44,7 +45,8 @@ private:
 	GLHelper(const GLHelper& other) = delete;
 	GLHelper operator=(const GLHelper& other) = delete;
 	static GraphEventHandler& GetHandler(GLFWwindow* w);
-	static Point2 RawPosToPoint(double i, double j);
+	static Point2 RawPosToPoint(GLFWwindow* w, double i, double j);
+	static void WindowSizeCallback(GLFWwindow* w, int width, int height);
 	static void CursorPosCallback(GLFWwindow* w, double i, double j);
 	static void MouseButtonCallback(GLFWwindow* w, GLFWResult button, GLFWResult action, GLFWResult /*mods*/);
 	static void KeyCallback(GLFWwindow* w, GLFWResult key, GLFWResult /*scancode*/, GLFWResult action, GLFWResult /*mods*/);
