@@ -9,6 +9,7 @@ public:
 	static Force AttractionForce(const Node& nodeFrom, const Node& nodeTo);
 	static Force RepulsionForce(const Node& nodeFrom, const Node& nodeTo);
 	static Force RepulsionFromBoundaryForce(const Node& nodeFrom);
+	static Force DampingForce(const Node& node);
 	static Force KeepAtDistForce(const Node& nodeFrom, const Node& nodeTo, double dist);
 private:
 	static double GravitationalForceMagnitude(const Node& node0, const Node& node1);

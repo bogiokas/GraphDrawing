@@ -25,7 +25,7 @@ public:
 		return m_pos.DistQ(pt) < m_r * m_r;
 	}
 private:
-	static double constexpr timestep = 1.0;
+	static double constexpr timestep = 0.3;
 	Point2 m_pos;
 	Point2 m_vel;
 	Point2 m_acc;

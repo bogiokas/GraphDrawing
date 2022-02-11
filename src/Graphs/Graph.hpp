@@ -42,6 +42,8 @@ private:
 	void ArrangeVerticesAtCircle(double r=0.5);
 	void MakeVerticesRepelEachOther(double intensity);
 	void MakeEdgesTryToKeepFixedDist(double dist, double intensity);
+	void MakeVerticesBeRepelledFromBoundary(double intensity);
+	void MakeVerticesBeDamped(double intensity);
 	void LockVertexIfNeeded();
 	void UpdateAllNodes();
 

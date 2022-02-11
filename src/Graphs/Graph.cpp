@@ -30,10 +30,15 @@ void Graph::Init(std::vector<std::unique_ptr<LabelBase>> V, std::vector<std::arr
 }
 
 void Graph::Update() {
-	double intensityRepel = 0.1;
-	double intensityAttract = 0.2;
+	double intensityRepel = 0.01;
+	double idealDistance = 0.3;
+	double intensityFixedDistance = 1.0;
+	double intensityBoundaryRepel = 0.05;
+	double intensityDamping = 0.1;
 	MakeVerticesRepelEachOther(intensityRepel);
-	MakeEdgesTryToKeepFixedDist(0.2, intensityAttract);
+	MakeEdgesTryToKeepFixedDist(idealDistance, intensityFixedDistance);
+	MakeVerticesBeRepelledFromBoundary(intensityBoundaryRepel);
+	MakeVerticesBeDamped(intensityDamping);
 	LockVertexIfNeeded();
 	UpdateAllNodes();
 }
@@ -100,6 +105,17 @@ void Graph::MakeEdgesTryToKeepFixedDist(double dist, double intensity) {
 	}
 }
 
+void Graph::MakeVerticesBeRepelledFromBoundary(double intensity) {
+	for (auto& v : m_V) {
+		v->ApplyForceToNode(ForceBuilder::RepulsionFromBoundaryForce(v->GetNode()), intensity);
+	}
+}
+
+void Graph::MakeVerticesBeDamped(double intensity) {
+	for (auto& v : m_V) {
+		v->ApplyForceToNode(ForceBuilder::DampingForce(v->GetNode()), intensity);
+	}
+}
 void Graph::LockVertexIfNeeded() {
 	if(auto lock = m_eventHandler.GetLock(); lock.has_value()) {
 		auto [pV, pt] = *lock;

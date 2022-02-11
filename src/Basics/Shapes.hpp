@@ -28,9 +28,7 @@ public:
 		}
 	static Point2 Zero() { return Point2(0.0, 0.0); }
 	static Point2 X() { return Point2(1.0, 0.0); }
-	static Point2 Xinv() { return Point2(-1.0, 0.0); }
 	static Point2 Y() { return Point2(0.0, 1.0); }
-	static Point2 Yinv() { return Point2(0.0, -1.0); }
 	void operator+=(const Point2& other) {
 		m_pt[0] += other.GetPt()[0];
 		m_pt[1] += other.GetPt()[1];
@@ -51,7 +49,10 @@ public:
 		return Point2(m_pt[0]+other.GetPt()[0], m_pt[1]+other.GetPt()[1]);
 	}
 	Point2 operator-(const Point2& other) const {
-		return Point2(m_pt[0]-other.GetPt()[0], m_pt[1]-other.GetPt()[1]);
+		return Point2(m_pt[0] - other.GetPt()[0], m_pt[1] - other.GetPt()[1]);
+	}
+	Point2 operator-() const {
+		return Point2(-m_pt[0], -m_pt[1]);
 	}
 	Point2 operator*(double r) const {
 		return Point2(m_pt[0]*r, m_pt[1]*r);

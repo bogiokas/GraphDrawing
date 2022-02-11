@@ -20,14 +20,19 @@ Force ForceBuilder::RepulsionFromBoundaryForce(const Node& nodeFrom) {
 	double forceMagnitudeRight = GravitationalForceMagnitude(nodeFrom, projRight);
 	Node projLeft = Node(Point2(-1.0, pos[1]));
 	double forceMagnitudeLeft = GravitationalForceMagnitude(nodeFrom, projLeft);
-	Node projUp = Node(Point2(pos[0], -1.0));
+	Node projUp = Node(Point2(pos[0], 1.0));
 	double forceMagnitudeUp = GravitationalForceMagnitude(nodeFrom, projUp);
-	Node projDown = Node(Point2(pos[0], 1.0));
+	Node projDown = Node(Point2(pos[0], -1.0));
 	double forceMagnitudeDown = GravitationalForceMagnitude(nodeFrom, projDown);
-	return Point2::Xinv() * forceMagnitudeRight +
-		Point2::X() * forceMagnitudeLeft +
-		Point2::Yinv() * forceMagnitudeUp +
-		Point2::Y() * forceMagnitudeDown;
+	return -Point2::X() * forceMagnitudeRight
+		+ Point2::X() * forceMagnitudeLeft
+		- Point2::Y() * forceMagnitudeUp
+		+ Point2::Y() * forceMagnitudeDown;
+}
+
+Force ForceBuilder::DampingForce(const Node& node) {
+	constexpr double cConst = 0.1; // limit: 2sqrt(m*k) = 0.2
+	return -node.GetVel() * cConst;
 }
 
 Force ForceBuilder::KeepAtDistForce(const Node& nodeFrom, const Node& nodeTo, double dist) {
@@ -41,6 +46,7 @@ Force ForceBuilder::KeepAtDistForce(const Node& nodeFrom, const Node& nodeTo, do
 double ForceBuilder::GravitationalForceMagnitude(const Node& node0, const Node& node1) {
 	constexpr double gConst = 0.005;
 	double distQ = (node0.GetPos() - node1.GetPos()).NormQ();
+	if (distQ < EPSQ) distQ = EPSQ;
 	return gConst * node0.GetMass()  * node1.GetMass() / distQ;
 }
 
