@@ -13,7 +13,7 @@ Point2 GLHelper::RawPosToPoint(GLFWwindow* w, double i, double j) {
 	return Point2(2*i/width-1, 1-2*j/height);
 }
 
-void GLHelper::WindowSizeCallback(GLFWwindow* w, int width, int height) {
+void GLHelper::WindowSizeCallback(GLFWwindow* /*w*/, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 

@@ -52,7 +52,7 @@ private:
 	GLHelper operator=(const GLHelper& other) = delete;
 	static GraphEventHandler& GetHandler(GLFWwindow* w);
 	static Point2 RawPosToPoint(GLFWwindow* w, double i, double j);
-	static void WindowSizeCallback(GLFWwindow* w, int width, int height);
+	static void WindowSizeCallback(GLFWwindow* /*w*/, int width, int height);
 	static void CursorPosCallback(GLFWwindow* w, double i, double j);
 	static void MouseButtonCallback(GLFWwindow* w, GLFWResult button, GLFWResult action, GLFWResult /*mods*/);
 	static void KeyCallback(GLFWwindow* w, GLFWResult key, GLFWResult /*scancode*/, GLFWResult action, GLFWResult /*mods*/);

@@ -8,7 +8,7 @@
 template<> void DrawHelper::Draw(const VertexSet& vertices) {
 	glEnable(GL_BLEND);
 	glEnable(GL_POINT_SMOOTH);
-	glPointSize(7.0);
+	glPointSize(7.0f);
 	glBegin(GL_POINTS);
 	for(const auto& v : vertices) {
 		const auto& node = v->GetNode();
@@ -19,7 +19,7 @@ template<> void DrawHelper::Draw(const VertexSet& vertices) {
 
 #ifdef _DEBUG
 	glEnable(GL_BLEND);
-	glLineWidth(0.1);
+	glLineWidth(0.1f);
 	glBegin(GL_LINES);
 	for(const auto& v : vertices) {
 		const auto& node = v->GetNode();
@@ -33,7 +33,7 @@ template<> void DrawHelper::Draw(const VertexSet& vertices) {
 
 template<> void DrawHelper::Draw(const EdgeSet& edges) {
 	glEnable(GL_BLEND);
-	glLineWidth(2.0);
+	glLineWidth(2.0f);
 	glBegin(GL_LINES);
 	for(const auto& e : edges) e->GetSegment().Draw();
 	glEnd();
