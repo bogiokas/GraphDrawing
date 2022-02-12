@@ -5,27 +5,10 @@
 #endif
 
 #include<GL/gl.h>
-
-template<> void DrawHelper::Draw(const Node& node) {
-	const auto& pos = node.GetPos();
-	glEnable(GL_BLEND);
-	glPointSize(5.0);
-	glBegin(GL_POINTS);
-	pos.Draw();
-	glEnd();
-
-#ifdef _DEBUG
-	const auto& vel = node.GetVel();
-	glEnable(GL_BLEND);
-	glBegin(GL_LINES);
-	Segment2(pos, pos+(vel*10.0), BLUE).Draw();
-	glEnd();
-#endif
-}
-
 template<> void DrawHelper::Draw(const VertexSet& vertices) {
 	glEnable(GL_BLEND);
-	glPointSize(5.0);
+	glEnable(GL_POINT_SMOOTH);
+	glPointSize(7.0);
 	glBegin(GL_POINTS);
 	for(const auto& v : vertices) {
 		const auto& node = v->GetNode();
@@ -36,6 +19,7 @@ template<> void DrawHelper::Draw(const VertexSet& vertices) {
 
 #ifdef _DEBUG
 	glEnable(GL_BLEND);
+	glLineWidth(0.1);
 	glBegin(GL_LINES);
 	for(const auto& v : vertices) {
 		const auto& node = v->GetNode();

@@ -5,8 +5,14 @@
 #include<GLFW/glfw3.h>
 
 using GLFWResult = int;
-static constexpr int WIDTH = 1280;
-static constexpr int HEIGHT = 960;
+
+#ifdef _WIN32
+static constexpr int WIDTH = 1920;
+static constexpr int HEIGHT = 1080;
+#else
+static constexpr int WIDTH = 1024;
+static constexpr int HEIGHT = 600;
+#endif
 
 class Graph;
 

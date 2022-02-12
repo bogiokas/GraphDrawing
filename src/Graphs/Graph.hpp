@@ -29,6 +29,10 @@ public:
 		return m_eventHandler;
 	}
 
+	double Density() {
+		return 2 * m_E.size() / (size() * (size() - 1));
+	}
+
 	void Update();
 	void Draw() const;
 	bool InsertVertex(std::unique_ptr<LabelBase> pLabel);

@@ -14,6 +14,7 @@ public:
 		: m_pos(pos), m_vel(vel), m_acc(), m_mass(1.0), m_r(0.05)  {}
 	void Update();
 	void StayStill();
+	void RestrictVelocity(double cap);
 	void RestrictInsideBoundary();
 	void ApplyForce(const Force& force);
 	const Point2& GetPos() const { return m_pos; }

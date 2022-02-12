@@ -4,6 +4,7 @@ void Node::Update() {
 	m_vel += m_acc * timestep;
 	m_pos += m_vel * timestep;
 	m_acc = Point2::Zero();
+	RestrictVelocity(0.1);
 	RestrictInsideBoundary();
 }
 
@@ -15,6 +16,13 @@ void Node::StayStill() {
 void Node::SetPos(const Point2& pt) {
 	m_pos = pt;
 	RestrictInsideBoundary();
+}
+
+void Node::RestrictVelocity(double cap) {
+	if (m_vel.Norm() > cap) {
+		m_vel.Normalize();
+		m_vel *= cap;
+	}
 }
 
 void Node::RestrictInsideBoundary() {

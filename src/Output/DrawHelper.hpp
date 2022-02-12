@@ -11,7 +11,5 @@ public:
 	static void Draw(const Drawable& object);
 };
 
-template<> void DrawHelper::Draw(const Node& node);
-
 template<> void DrawHelper::Draw(const VertexSet& vertices);
 template<> void DrawHelper::Draw(const EdgeSet& edges);

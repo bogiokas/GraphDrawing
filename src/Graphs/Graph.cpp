@@ -31,7 +31,7 @@ void Graph::Init(std::vector<std::unique_ptr<LabelBase>> V, std::vector<std::arr
 
 void Graph::Update() {
 	double intensityRepel = 0.01;
-	double idealDistance = 0.3;
+	double idealDistance = 0.5 * Density() + 0.2;
 	double intensityFixedDistance = 1.0;
 	double intensityBoundaryRepel = 0.05;
 	double intensityDamping = 0.1;
