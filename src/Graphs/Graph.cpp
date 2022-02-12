@@ -100,7 +100,8 @@ Graph::Graph(Index n, const std::function<bool(Index, Index)> rawBinRelation)
 }
 
 bool Graph::InsertVertex(constLabel label) {
-	return m_V.insert(std::make_unique<Vertex>(std::move(label->clone()))).second;
+	m_V.insert(std::make_unique<Vertex>(std::move(label->clone())));
+	return true;
 }
 
 bool Graph::InsertEdge(const std::array<constLabel, 2>& labelPair) {
@@ -108,11 +109,12 @@ bool Graph::InsertEdge(const std::array<constLabel, 2>& labelPair) {
 	if(!v0.has_value()) return false;
 	auto v1 = FindVertex(labelPair[1]);
 	if(!v1.has_value()) return false;
-	return m_E.insert(std::make_unique<Edge>(*v0, *v1)).second;
+	m_E.insert(std::make_unique<Edge>(*v0, *v1));
+	return true;
 }
 
 std::optional<Vertex*> Graph::FindVertex(constLabel label) const {
-	auto it = std::find_if(m_V.begin(), m_V.end(), [label](const auto& v) { return v->GetLabel()->IsEqual(label); });
+	auto it = std::find_if(m_V.begin(), m_V.end(), [&label](const auto& v) { return v->GetLabel()->IsEqual(label); });
 	if(it == m_V.end())
 		return std::nullopt;
 	return it->get();
@@ -137,17 +139,21 @@ void Graph::Draw() const {
 	DrawHelper::Draw(m_V);
 }
 
-bool Graph::IsVertex(constLabel label) {
-	auto it = std::find_if(m_V.begin(), m_V.end(), [label](const auto& pV) { return pV->GetLabel()->IsEqual(label); });
+bool Graph::IsVertex(constLabel label) const {
+	auto wLabel = label->clone();
+	auto v = std::make_unique<Vertex>(std::move(wLabel));
+	auto it = std::find_if(m_V.begin(), m_V.end(), [&v](const auto& u){ return Unique_Ptr_Eq<Vertex>()(u, v); });
 	return it != m_V.end();
 }
 
-bool Graph::IsEdge(const std::array<constLabel, 2> labelPair) {
+bool Graph::IsEdge(const std::array<constLabel, 2> labelPair) const {
 	if(!IsVertex(labelPair[0]) || !IsVertex(labelPair[1])) return false;
-	auto it = std::find_if(m_E.begin(), m_E.end(), [labelPair](const auto& pE) {
-			auto labels = pE->GetLabels();
-			return labels[0] == labelPair[0] && labels[1] == labelPair[1];
-	});
+	auto wLabel0 = labelPair[0]->clone();
+	auto wLabel1 = labelPair[1]->clone();
+	auto v0 = std::make_unique<Vertex>(std::move(wLabel0));
+	auto v1 = std::make_unique<Vertex>(std::move(wLabel1));
+	auto e = std::make_unique<Edge>(v0.get(), v1.get());
+	auto it = std::find_if(m_E.begin(), m_E.end(), [&e](const auto& f) { return Unique_Ptr_Eq<Edge>()(e, f); });
 	return it != m_E.end();
 }
 

@@ -36,8 +36,8 @@ public:
 	void Update();
 	void Draw() const;
 
-	bool IsVertex(constLabel label);
-	bool IsEdge(const std::array<constLabel, 2> labelPair);
+	bool IsVertex(constLabel label) const;
+	bool IsEdge(const std::array<constLabel, 2> labelPair) const;
 
 	const std::vector<constLabel> GetVertexLabels() const;
 	const std::vector<std::array<constLabel, 2>> GetEdgeLabels() const;

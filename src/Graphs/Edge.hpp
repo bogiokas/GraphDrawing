@@ -2,8 +2,7 @@
 #include "Basics/Basics.hpp"
 #include "Basics/Shapes.hpp"
 #include "Label.hpp"
-
-class Vertex;
+#include "Vertex.hpp"
 
 class Edge {
 public:
@@ -15,7 +14,8 @@ public:
 
 	bool operator==(const Edge& other) const {
 		const auto& otherVertices = other.GetVertices();
-		return vertices[0] == otherVertices[0] && vertices[1] == otherVertices[1];
+		return (*vertices[0] == *otherVertices[0] && *vertices[1] == *otherVertices[1])
+			|| (*vertices[0] == *otherVertices[1] && *vertices[1] == *otherVertices[0]);
 	}
 private:
 	std::array<Vertex*, 2> vertices;
