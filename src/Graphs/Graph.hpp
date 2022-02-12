@@ -1,4 +1,5 @@
 #pragma once
+#include<functional>
 #include "Basics/Basics.hpp"
 #include "Basics/PtrUnorderedSet.hpp"
 
